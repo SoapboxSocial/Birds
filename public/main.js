@@ -97,6 +97,12 @@ function lobbyLoop() {
   draw(now, 0);
 }
 
+const urlParams = new URLSearchParams(window.location.search);
+
+const roomID = urlParams.get("roomID");
+
+console.log({ roomID });
+
 /**
  * @name startClient
  * Starts up the game and connects to Socket.io
@@ -123,6 +129,7 @@ async function startClient(nick) {
     "Connecting to the server...";
 
   _socket = io.connect(Const.SOCKET_ADDR + ":" + Const.SOCKET_PORT, {
+    query: `roomID=${roomID}`,
     reconnect: false,
   });
 

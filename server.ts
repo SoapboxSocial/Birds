@@ -1,7 +1,7 @@
 import express from "express";
 import path from "path";
 import { constants as Const } from "./constants";
-import { startServer } from "./lib/birds";
+import { start } from "./lib/birds";
 
 const app = express();
 
@@ -32,4 +32,4 @@ app.listen(app.get("PORT"), () => {
   console.log(`🐦 [server]: listening at ${app.get("PORT")}`);
 });
 
-startServer();
+start();
