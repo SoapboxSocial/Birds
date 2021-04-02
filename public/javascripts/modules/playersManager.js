@@ -1,15 +1,16 @@
-/*
- *   Represent a player. Can
- */
-define(["playerEntity"], function (Player) {
-  var _playerList, _keyMatching, _currentPlayer;
+import { Player } from "./playerEntity.js";
 
-  function PlayerManager() {
+var _playerList;
+var _keyMatching;
+var _currentPlayer;
+
+export class PlayerManager {
+  constructor() {
     _playerList = new Array();
     _keyMatching = new Array();
   }
 
-  PlayerManager.prototype.addPlayer = function (infos, playerID) {
+  addPlayer(infos, playerID) {
     var player;
 
     if (this.getPlayerFromId(infos.id) !== null) {
@@ -32,9 +33,9 @@ define(["playerEntity"], function (Player) {
       _currentPlayer = _playerList.length - 1;
       console.log("Hey, it's me !");
     }
-  };
+  }
 
-  PlayerManager.prototype.removePlayer = function (player) {
+  removePlayer(player) {
     var pos = _keyMatching[player.id],
       i;
 
@@ -53,11 +54,9 @@ define(["playerEntity"], function (Player) {
         if (_playerList[i].isCurrentPlayer() == true) _currentPlayer = i;
       }
     }
-  };
+  }
 
-  PlayerManager.prototype.updatePlayerListFromServer = function (
-    playerlistUpdated
-  ) {
+  updatePlayerListFromServer(playerlistUpdated) {
     var nbUpdates = playerlistUpdated.length,
       i;
 
@@ -66,17 +65,17 @@ define(["playerEntity"], function (Player) {
         playerlistUpdated[i]
       );
     }
-  };
+  }
 
-  PlayerManager.prototype.getPlayers = function () {
+  getPlayers() {
     return _playerList;
-  };
+  }
 
-  PlayerManager.prototype.getCurrentPlayer = function () {
+  getCurrentPlayer() {
     return _playerList[_currentPlayer];
-  };
+  }
 
-  PlayerManager.prototype.getPlayerFromId = function (playerID) {
+  getPlayerFromId(playerID) {
     var nbPlayers = _playerList.length,
       i;
 
@@ -86,7 +85,5 @@ define(["playerEntity"], function (Player) {
 
     console.log("Can't find player in list");
     return null;
-  };
-
-  return PlayerManager;
-});
+  }
+}
