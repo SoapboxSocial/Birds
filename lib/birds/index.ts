@@ -1,1 +1,1 @@
-export { startServer } from "./game";
+export { start } from "./server";
