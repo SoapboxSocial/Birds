@@ -6,17 +6,18 @@ import { constants as Const } from "../../constants";
  */
 let io: any;
 
-let games: { [key: string]: Game } = {}
+let games: {
+  [key: string]: Game;
+} = {};
 
 function getOrCreate(room: string) {
   if (!(room in games)) {
-    let game = new Game()
-    game.start()
-    games[room] = game
+    let game = new Game();
+    game.start();
+    games[room] = game;
   }
 
-  return games[room]
-
+  return games[room];
 }
 
 export function start() {
@@ -28,13 +29,15 @@ export function start() {
 
   // On new client connection
   io.sockets.on("connection", function (socket: any) {
-    let id = socket.handshake.query.room
-    if (id == "" || id == undefined) {
-      socket.disconnect()
-      return
+    let id = socket.handshake.query.roomID;
+
+    if (id === "" || id === undefined) {
+      socket.disconnect();
+
+      return;
     }
 
-    getOrCreate(id).handle(socket)
+    getOrCreate(id).handle(socket);
   });
 
   console.log(
