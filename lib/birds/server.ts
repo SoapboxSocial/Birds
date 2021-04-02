@@ -6,8 +6,18 @@ import { constants as Const } from "../../constants";
  */
 let io: any;
 
-let _instance = new Game()
-_instance.start()
+let games: { [key: string]: Game }
+
+function getOrCreate(room: string) {
+  if (!(room in games)) {
+    let game = new Game()
+    game.start()
+    games[room] = game
+  }
+
+  return games[room]
+
+}
 
 export function start() {
   io = require("socket.io").listen(Const.SOCKET_PORT);
@@ -18,7 +28,13 @@ export function start() {
 
   // On new client connection
   io.sockets.on("connection", function (socket: any) {
-    _instance.handle(socket)
+    let id = socket.handshake.query.room
+    if (id == "") {
+      socket.close()
+      return
+    }
+
+    getOrCreate(id).handle(socket)
   });
 
   console.log(
