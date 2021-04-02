@@ -1,5 +1,6 @@
-import * as enums from "./enums";
 import { constants as Const } from "../constants";
+import { PlayerStateEnum } from "../shared";
+import * as enums from "./enums";
 
 // Defines
 const MAX_BIRDS_IN_A_ROW = 3;
@@ -14,7 +15,24 @@ const MIN_ROTATION = 60;
 const ROTATION_SPEED = 8;
 
 export default class Player {
-  constructor(socket, uid, color) {
+  private _socket: any;
+  private _speedY: number;
+  private _rank: number;
+  private _lastPipe: number;
+  private _playerTinyObject: {
+    id: string;
+    nick: string;
+    color: number;
+    rotation: number;
+    score: number;
+    best_score: number;
+    state: PlayerStateEnum;
+    posX: number;
+    posY: number;
+    floor: number;
+  };
+
+  constructor(socket: any, uid: string, color: number) {
     this._socket = socket;
     this._speedY = 0;
     this._rank = 1;
@@ -33,7 +51,7 @@ export default class Player {
     };
   }
 
-  update(timeLapse) {
+  update(timeLapse: number) {
     // console.info('Update player ' + this._playerTinyObject.nick);
 
     // If player is still alive, update its Y position
@@ -66,13 +84,13 @@ export default class Player {
     return this._playerTinyObject.nick;
   }
 
-  setNick(nick) {
+  setNick(nick: string) {
     this._playerTinyObject.nick = nick;
 
     console.info("Please call me [" + nick + "] !");
   }
 
-  setFloor(floor) {
+  setFloor(floor: number) {
     this._playerTinyObject.floor = floor;
   }
 
@@ -92,7 +110,7 @@ export default class Player {
     return this._playerTinyObject.best_score;
   }
 
-  sorryYouAreDie(nbPlayersLeft) {
+  sorryYouAreDie(nbPlayersLeft: number) {
     this._rank = nbPlayersLeft;
 
     this._playerTinyObject.state = enums.PlayerState.Died;
@@ -100,7 +118,7 @@ export default class Player {
     console.info("OMG ! They kill " + this._playerTinyObject.nick + " :p");
   }
 
-  setReadyState(readyState) {
+  setReadyState(readyState: boolean) {
     this._playerTinyObject.state = readyState
       ? enums.PlayerState.Playing
       : enums.PlayerState.WaitingInLobby;
@@ -114,7 +132,7 @@ export default class Player {
     );
   }
 
-  setBestScore(score) {
+  setBestScore(score: number) {
     this._playerTinyObject.best_score = score;
 
     console.info(
@@ -130,7 +148,7 @@ export default class Player {
     return this._playerTinyObject;
   }
 
-  preparePlayer(pos) {
+  preparePlayer(pos: number) {
     // Place bird on the departure grid
     const line = Math.floor(pos / MAX_BIRDS_IN_A_ROW);
 
@@ -158,7 +176,7 @@ export default class Player {
     }
   }
 
-  updateScore(pipeID) {
+  updateScore(pipeID: number) {
     // If the current pipe ID is different from the last one, it means the players meets a new pipe. So update score
     if (pipeID !== this._lastPipe) {
       this._playerTinyObject.score++;
@@ -167,7 +185,13 @@ export default class Player {
     }
   }
 
-  sendScore(NBPlayers, HighScores) {
+  sendScore(
+    NBPlayers: number,
+    HighScores: {
+      player: string;
+      score: number;
+    }[]
+  ) {
     // Update player best score if he just make a new one !
     if (this._playerTinyObject.score > this._playerTinyObject.best_score) {
       this._playerTinyObject.best_score = this._playerTinyObject.score;
