@@ -139,25 +139,6 @@ export default class Instance {
         });
     }
 
-    createNewGame() {
-        let players: PlayerTinyObject[];
-
-        // Flush pipe list
-        this.pipeManager.flushPipeList();
-
-        // Reset players state and send it
-        players = this.playersManager.resetPlayersForNewGame();
-
-        for (let i = 0; i < players.length; i++) {
-            this.sockets.forEach(function (socket) {
-                socket.emit("player_ready_state", players[i])
-            })
-        }
-
-        // Notify players of the new game state
-        this.updateGameState(ServerStateEnum.WaitingForPlayers, true)
-    }
-
     gameOver() {
         // Stop game loop
         if (this.timer) {
@@ -173,7 +154,24 @@ export default class Instance {
         this.playersManager.sendPlayerScore();
 
         // After 5s, create a new game
-        setTimeout(this.createNewGame, Const.TIME_BETWEEN_GAMES);
+        setTimeout(() => {
+            let players: PlayerTinyObject[];
+
+            // Flush pipe list
+            this.pipeManager.flushPipeList();
+
+            // Reset players state and send it
+            players = this.playersManager.resetPlayersForNewGame();
+
+            for (let i = 0; i < players.length; i++) {
+                this.sockets.forEach(function (socket) {
+                    socket.emit("player_ready_state", players[i])
+                })
+            }
+
+            // Notify players of the new game state
+            this.updateGameState(ServerStateEnum.WaitingForPlayers, true)
+        }, Const.TIME_BETWEEN_GAMES);
     }
 
     startGameLoop() {
