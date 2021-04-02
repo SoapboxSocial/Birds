@@ -58,6 +58,8 @@ export default class Instance {
                 // @ts-ignore
                 player = null;
             });
+
+            this.sockets = this.sockets.filter(i => i.id != socket.id)
         });
 
         socket.on(
