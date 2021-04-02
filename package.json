@@ -6,7 +6,7 @@
     "start": "node build/server.js",
     "dev": "nodemon -r dotenv/config server.ts",
     "copy": "copyfiles birds.html public/**/**/**/* build",
-    "build": "tsc --project ./ && npm run copy && npm run bundle",
+    "build": "tsc --project ./ && npm run copy",
     "format": "prettier --write \"**/*.js\"",
     "bundle": "esbuild client/main.js --bundle --minify --sourcemap --target=chrome58,firefox57,safari11,edge16 --outfile=build/public/main.js"
   },
