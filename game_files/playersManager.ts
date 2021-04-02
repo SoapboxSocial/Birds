@@ -1,16 +1,17 @@
 import { EventEmitter } from "events";
+import { PlayerStateEnum } from "../shared";
 import * as enums from "./enums";
 import Player from "./player";
 import Scores from "./scoreSystem";
 
 const NB_AVAILABLE_BIRDS_COLOR = 4;
 
-let _playersList = Player[];
+let _playersList: Player[] = [];
 let _posOnGrid = 0;
 let _scores = new Scores();
 
 export default class PlayersManager extends EventEmitter {
-  addNewPlayer(playerSocket, id) {
+  addNewPlayer(playerSocket: any, id: string) {
     // Set an available color according the number of client's sprites
     const birdColor = Math.floor(
       Math.random() * (NB_AVAILABLE_BIRDS_COLOR - 1 + 1)
@@ -30,7 +31,7 @@ export default class PlayersManager extends EventEmitter {
     return newPlayer;
   }
 
-  removePlayer(player) {
+  removePlayer(player: Player) {
     const pos = _playersList.indexOf(player);
 
     if (pos < 0) {
@@ -44,7 +45,7 @@ export default class PlayersManager extends EventEmitter {
     }
   }
 
-  changeLobbyState(player, isReady) {
+  changeLobbyState(player: Player, isReady: boolean) {
     let pos = _playersList.indexOf(player);
 
     if (pos < 0) {
@@ -70,7 +71,7 @@ export default class PlayersManager extends EventEmitter {
     this.emit("players-ready");
   }
 
-  getPlayerList(specificState) {
+  getPlayerList(specificState: PlayerStateEnum) {
     let players = [];
 
     for (let i = 0; i < _playersList.length; i++) {
@@ -104,7 +105,7 @@ export default class PlayersManager extends EventEmitter {
     return _playersList.length;
   }
 
-  updatePlayers(time) {
+  updatePlayers(time: number) {
     for (let i = 0; i < _playersList.length; i++) {
       _playersList[i].update(time);
     }
@@ -150,7 +151,7 @@ export default class PlayersManager extends EventEmitter {
     });
   }
 
-  prepareNewPlayer(player, nickname, floor) {
+  prepareNewPlayer(player: Player, nickname: string, floor: number) {
     // Set his nickname
     player.setNick(nickname);
 
