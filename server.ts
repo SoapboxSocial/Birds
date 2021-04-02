@@ -15,7 +15,9 @@ app.use(express.static(path.join(__dirname, "public")));
 /**
  * Routes
  */
-app.get("/birds", (req, res) => res.sendFile(`${__dirname}/views/birds.html`));
+app.get("/birds", (req, res) => {
+  res.sendFile(`${__dirname}/birds.html`);
+});
 
 app.get("/sharedConstants.js", (req, res) => {
   res.sendFile(`${__dirname}/sharedConstants.js`);
