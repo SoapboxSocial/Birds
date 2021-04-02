@@ -1,7 +1,7 @@
 import express from "express";
 import path from "path";
 import { constants as Const } from "./constants";
-import { startServer } from "./game_files/game";
+import { startServer } from "./lib/birds";
 
 const app = express();
 

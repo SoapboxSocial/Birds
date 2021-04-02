@@ -2,8 +2,8 @@ import PlayersManager from "./playersManager";
 import PipeManager from "./pipeManager";
 import { checkCollision } from "./collisionEngine";
 import { ServerState, PlayerState } from "./enums";
-import { constants as Const } from "../constants";
-import { ServerStateEnum } from "../shared";
+import { constants as Const } from "../../constants";
+import { ServerStateEnum } from "./shared";
 import Player from "./player";
 
 let _playersManager: PlayersManager;

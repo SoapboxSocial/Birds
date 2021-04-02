@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { PlayerStateEnum } from "../shared";
+import { PlayerStateEnum } from "./shared";
 import * as enums from "./enums";
 import Player from "./player";
 import Scores from "./scoreSystem";

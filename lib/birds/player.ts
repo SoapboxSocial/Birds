@@ -1,5 +1,5 @@
-import { constants as Const } from "../constants";
-import { PlayerStateEnum } from "../shared";
+import { constants as Const } from "../../constants";
+import { PlayerStateEnum } from "./shared";
 import * as enums from "./enums";
 
 // Defines

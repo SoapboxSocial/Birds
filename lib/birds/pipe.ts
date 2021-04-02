@@ -1,4 +1,4 @@
-import { constants as Const } from "../constants";
+import { constants as Const } from "../../constants";
 
 export type PipeTinyObject = {
   id: number;
