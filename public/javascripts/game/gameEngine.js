@@ -185,6 +185,7 @@ require(["canvasPainter", "playersManager", "../../sharedConstants"], function (
       changeGameState(gameState);
     });
     _socket.on("game_loop_update", function (serverDatasUpdated) {
+      console.log(serverDatasUpdated)
       _playerManager.updatePlayerListFromServer(serverDatasUpdated.players);
       _pipeList = serverDatasUpdated.pipes;
     });
