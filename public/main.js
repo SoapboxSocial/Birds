@@ -30,6 +30,8 @@ var _socket;
 var _infPanlTimer;
 var _isNight = false;
 
+const emitter = window.mitt();
+
 requestAnimationFrame = window.requestAnimationFrame;
 
 /**
@@ -455,8 +457,6 @@ function infoPanel(isShow, htmlText, timeout) {
 if (window.navigator.msPointerEnabled) _isTouchDevice = true;
 else if ("ontouchstart" in window) _isTouchDevice = true;
 else _isTouchDevice = false;
-
-const emitter = window.mitt();
 
 const sequence = Date.now();
 
