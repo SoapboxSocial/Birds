@@ -32,6 +32,8 @@ var _isNight = false;
 
 const emitter = window.mitt();
 
+window.mitt = emitter;
+
 requestAnimationFrame = window.requestAnimationFrame;
 
 /**
