@@ -5,7 +5,7 @@ import Scores from "./scoreSystem";
 
 const NB_AVAILABLE_BIRDS_COLOR = 4;
 
-let _playersList = [];
+let _playersList = Player[];
 let _posOnGrid = 0;
 let _scores = new Scores();
 
