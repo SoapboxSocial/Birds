@@ -1,5 +1,5 @@
 import * as canvasPainter from "./modules/canvasPainter.js";
-import { getUser } from "./modules/minis.js";
+import { postMessage } from "./modules/minis.js";
 import { PlayerManager } from "./modules/playersManager.js";
 import { Const } from "./modules/sharedConstants.js";
 
@@ -100,8 +100,10 @@ function lobbyLoop() {
 /**
  * @name startClient
  * Starts up the game and connects to Socket.io
+ *
+ * @param {string} nick
  */
-function startClient() {
+async function startClient(nick) {
   if (typeof io === "undefined") {
     document.getElementById("gs-error-message").innerHTML =
       "Cannot retreive socket.io file at the address " +
@@ -151,7 +153,7 @@ function startClient() {
 
     showHideMenu(enumPanels.Login, true);
 
-    document.getElementById("player-connection").onclick = loadGameRoom;
+    loadGameRoom(nick);
   });
 
   _socket.on("error", function () {
@@ -168,18 +170,10 @@ function startClient() {
  * @name loadGameRoom
  * Handles loading the current game for the user
  *
+ * @param {string} nick
  * @returns boolean
  */
-async function loadGameRoom() {
-  const user = await getUser();
-
-  var nick = user.display_name;
-
-  // Unbind button event to prevent "space click"
-  document.getElementById("player-connection").onclick = function () {
-    return false;
-  };
-
+function loadGameRoom(nick) {
   // Bind new socket events
   _socket.on("player_list", function (playersList) {
     // Add this player in the list
@@ -455,11 +449,48 @@ if (window.navigator.msPointerEnabled) _isTouchDevice = true;
 else if ("ontouchstart" in window) _isTouchDevice = true;
 else _isTouchDevice = false;
 
+const emitter = window.mitt();
+
+const sequence = Date.now();
+
+// window.webkit = {
+//   messageHandlers: {
+//     user: {
+//       postMessage: (payload) => {
+//         console.log(
+//           "Handling message handler 'user' with sequence",
+//           payload.sequence
+//         );
+
+//         emitter.emit("user", {
+//           sequence: payload.sequence,
+//           data: {
+//             display_name: "Bitch",
+//             id: 10,
+//             image: "fuck",
+//             username: "jeff",
+//           },
+//         });
+//       },
+//     },
+//   },
+// };
+
+emitter.on("user", (event) => {
+  if (event.sequence === sequence) {
+    console.log("Sequence correct, start client");
+
+    startClient(event.data.display_name);
+  }
+});
+
 // Load resources and Start the client !
 console.log("Client started, load resources...");
+
 canvasPainter.loadResources(function () {
   console.log("Resources loaded, connect to server...");
-  startClient();
+
+  postMessage("user", { sequence });
 });
 
 var // Obtain a reference to the canvas element using its id.
