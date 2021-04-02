@@ -48,8 +48,8 @@ export default class PipeManager extends EventEmitter {
 
   getPipeList() {
     return _pipeList.map(function (pipe) {
-      pipe.getPipeObject()
-    })
+      pipe.getPipeObject();
+    });
   }
 
   getPotentialPipeHit() {
