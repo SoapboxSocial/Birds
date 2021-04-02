@@ -1,7 +1,7 @@
 export const Const = {
   SERVER_PORT: 4242,
   SOCKET_PORT: 1337,
-  SOCKET_ADDR: "https://soapbox-apps-server-e782y.ondigitalocean.app/birds",
+  SOCKET_ADDR: "https://soapbox-apps-server-e782y.ondigitalocean.app",
 
   SCREEN_WIDTH: 900,
   SCREEN_HEIGHT: 768,
