@@ -30,6 +30,10 @@ export default class Game {
         this.timeStartGame = 0
     }
 
+    broadcast(from: any, event: string, data: any) {
+        this.sockets.filter(i => i.id != from).forEach(i => i.emit(event, data))
+    }
+
     start() {
         this.playersManager.on("players-ready", () => {
             this.startGameLoop();
@@ -53,7 +57,7 @@ export default class Game {
             socket.get("PlayerInstance", (_: any, _player: Player) => {
                 this.playersManager.removePlayer(_player);
 
-                socket.broadcast.emit("player_disconnect", _player.getPlayerObject());
+                this.broadcast(socket.id, "player_disconnect", _player.getPlayerObject())
 
                 // @ts-ignore
                 player = null;
@@ -121,7 +125,7 @@ export default class Game {
                 // If the server is currently waiting for players, update ready state
                 if (this.state === ServerState.WaitingForPlayers) {
                     this.playersManager.changeLobbyState(player, readyState);
-                    socket.broadcast.emit("player_ready_state", player.getPlayerObject());
+                    this.broadcast(socket.id, "player_ready_state", player.getPlayerObject())
                 }
             });
 
@@ -135,7 +139,7 @@ export default class Game {
             // Notify new client about other players AND notify other about the new one ;)
             socket.emit("player_list", this.playersManager.getPlayerList());
 
-            socket.broadcast.emit("new_player", player.getPlayerObject());
+            this.broadcast(socket.id, "new_player", player.getPlayerObject())
         });
     }
 
