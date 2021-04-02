@@ -15,6 +15,8 @@ export function startServer() {
     io.set("log level", 2);
   });
 
+  _instance.start()
+
 
   // On new client connection
   io.sockets.on("connection", function (socket: any) {

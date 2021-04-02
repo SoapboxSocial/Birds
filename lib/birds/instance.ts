@@ -31,7 +31,6 @@ export default class Instance {
             this.startGameLoop();
         });
 
-
         this.pipeManager.on("need_new_pipe", () => {
             // Create a pipe and send it to clients
             var pipe = this.pipeManager.newPipe();
