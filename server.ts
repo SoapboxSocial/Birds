@@ -1,7 +1,7 @@
 import express from "express";
 import path from "path";
 import { constants as Const } from "./constants";
-import { startServer } from "./game_files/game";
+import { startServer } from "./lib/birds";
 
 const app = express();
 
@@ -15,7 +15,9 @@ app.use(express.static(path.join(__dirname, "public")));
 /**
  * Routes
  */
-app.get("/birds", (req, res) => res.sendFile(`${__dirname}/views/birds.html`));
+app.get("/birds", (req, res) => {
+  res.sendFile(`${__dirname}/birds.html`);
+});
 
 app.get("/sharedConstants.js", (req, res) => {
   res.sendFile(`${__dirname}/sharedConstants.js`);

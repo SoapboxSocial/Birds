@@ -1,9 +1,9 @@
 import PlayersManager from "./playersManager";
 import PipeManager from "./pipeManager";
-import {ServerStateEnum} from "../shared";
+import {ServerStateEnum} from "./shared"
 import {PlayerState, ServerState} from "./enums";
 import Player, {PlayerTinyObject} from "./player";
-import {constants as Const} from "../constants";
+import { constants as Const } from "../../constants";
 import {checkCollision} from "./collisionEngine";
 
 export default class Instance {
@@ -27,12 +27,12 @@ export default class Instance {
 
     start() {
 
-        this.playersManager.on("players-ready", function () {
+        this.playersManager.on("players-ready", () => {
             this.startGameLoop();
         });
 
 
-        this.pipeManager.on("need_new_pipe", function () {
+        this.pipeManager.on("need_new_pipe", () => {
             // Create a pipe and send it to clients
             var pipe = this.pipeManager.newPipe();
         });
@@ -44,8 +44,8 @@ export default class Instance {
         let player = this.playersManager.addNewPlayer(socket, socket.id);
 
         // Register to socket events
-        socket.on("disconnect", function () {
-            socket.get("PlayerInstance", function (_: any, _player: Player) {
+        socket.on("disconnect", () => {
+            socket.get("PlayerInstance", (_: any, _player: Player) => {
                 this.playersManager.removePlayer(_player);
 
                 socket.broadcast.emit("player_disconnect", _player.getPlayerObject());
@@ -57,12 +57,12 @@ export default class Instance {
 
         socket.on(
             "say_hi",
-            function (
+            (
                 nick: string,
                 floor: number,
                 fn: (gameState: ServerStateEnum, playerId: string) => void
-            ) {
-                fn(this.gameState, player.getID());
+            ) => {
+                fn(this.state, player.getID());
 
                 this.playerLog(socket, nick, floor);
             }
@@ -103,14 +103,14 @@ export default class Instance {
 
     playerLog(socket: any, nick: string, floor: number) {
         // Retrieve PlayerInstance
-        socket.get("PlayerInstance", function (error: any, player: Player) {
+        socket.get("PlayerInstance", (error: any, player: Player) => {
             if (error) {
                 console.error(error);
                 return
             }
 
             // Bind new client events
-            socket.on("change_ready_state", function (readyState: boolean) {
+            socket.on("change_ready_state", (readyState: boolean) => {
                 // If the server is currently waiting for players, update ready state
                 if (this.state === ServerState.WaitingForPlayers) {
                     this.playersManager.changeLobbyState(player, readyState);
@@ -177,7 +177,7 @@ export default class Instance {
         this.pipeManager.newPipe();
 
         // Start timer
-        this.timer = setInterval(function () {
+        this.timer = setInterval(() => {
             let now = new Date().getTime();
             let ellapsedTime = 0;
 
@@ -214,7 +214,7 @@ export default class Instance {
                 }
             }
 
-            this.sockets.forEach(function (socket) {
+            this.sockets.forEach((socket) => {
                 socket.emit("game_loop_update", {
                     players: this.playersManager.getOnGamePlayerList(),
                     pipes: this.pipeManager.getPipeList(),

@@ -1,12 +1,12 @@
+var SMOOTH_DAY_NIGHHT_TRANSITION_DURATION = 2000;
+
 /*
  *   Each BG resource is an instance of ParallaxBg.
  *   Its attributes are gotten in a json resource.
  *   Basicaly, each ParallaxBg have a pic resource, a size, a pos, a speed and a type (day or night)
  */
-define(function () {
-  var SMOOTH_DAY_NIGHHT_TRANSITION_DURATION = 2000;
-
-  function ParallaxBg(
+export class ParallaxBg {
+  constructor(
     dayResource,
     nightResource,
     width,
@@ -30,7 +30,7 @@ define(function () {
     this.changeOpacityTime = 0;
   }
 
-  ParallaxBg.prototype.draw = function (ctx, time, isNight) {
+  draw(ctx, time, isNight) {
     var drawPos;
 
     // Update BG pos
@@ -63,16 +63,16 @@ define(function () {
       // Go to the next part to draw
       drawPos += this.width;
     }
-  };
+  }
 
-  ParallaxBg.prototype.resetToDayCycle = function () {
+  resetToDayCycle() {
     this.nightCycle = false;
     this.isCalcOpacity = false;
     this.nightOpacity = 0;
     this.changeOpacityTime = 0;
-  };
+  }
 
-  ParallaxBg.prototype.calcOpacity = function (time, isNight) {
+  calcOpacity(time, isNight) {
     // If there is a change between the previous cycle and now, we have to smoothly recompute night opacity
     if (this.nightCycle != isNight) {
       this.nightCycle = isNight;
@@ -101,7 +101,5 @@ define(function () {
       // According to the cycle, adjust opacity
       if (this.nightCycle == false) this.nightOpacity = 1 - this.nightOpacity;
     }
-  };
-
-  return ParallaxBg;
-});
+  }
+}

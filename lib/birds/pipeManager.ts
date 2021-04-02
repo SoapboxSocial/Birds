@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { constants as Const } from "../constants";
+import { constants as Const } from "../../constants";
 import Pipe from "./pipe";
 
 let FIRST_PIPE_POSX = Const.SCREEN_WIDTH + 100;

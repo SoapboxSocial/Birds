@@ -1,12 +1,5 @@
-import PlayersManager from "./playersManager";
-import PipeManager from "./pipeManager";
-import {checkCollision} from "./collisionEngine";
-import {PlayerState, ServerState} from "./enums";
-import {constants as Const} from "../constants";
-import {ServerStateEnum} from "../shared";
-import Player from "./player";
 import Instance from "./instance";
-
+import { constants as Const } from "../../constants";
 
 /**
  * @todo convert to Socket.io instance
