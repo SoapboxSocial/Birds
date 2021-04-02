@@ -10,12 +10,18 @@
     />
 
     <link href="stylesheets/app.css" rel="stylesheet" type="text/css" />
+
     <script
       type="text/javascript"
-      src="{{wsAddress}}/socket.io/socket.io.js"
+      src="http://localhost:1337/socket.io/socket.io.js"
     ></script>
 
-    <title>Document</title>
+    <script
+      data-main="javascripts/game/gameEngine"
+      src="javascripts/lib/require.min.js"
+    ></script>
+
+    <title>Birds</title>
   </head>
   <body>
     <div id="gameScreen">
