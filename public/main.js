@@ -1,5 +1,5 @@
 import * as canvasPainter from "./modules/canvasPainter.js";
-import { PlayerManager as PlayersManager } from "./modules/playersManager.js";
+import { PlayerManager } from "./modules/playersManager.js";
 import { Const } from "./modules/sharedConstants.js";
 
 const enumState = {
@@ -114,7 +114,7 @@ function startClient() {
     return;
   }
 
-  _playerManager = new PlayersManager();
+  _playerManager = new PlayerManager();
 
   document.getElementById("gs-loader-text").innerHTML =
     "Connecting to the server...";
