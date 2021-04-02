@@ -1,4 +1,5 @@
 import * as canvasPainter from "./modules/canvasPainter.js";
+import { getUser } from "./modules/minis.js";
 import { PlayerManager } from "./modules/playersManager.js";
 import { Const } from "./modules/sharedConstants.js";
 
@@ -169,23 +170,10 @@ function startClient() {
  *
  * @returns boolean
  */
-function loadGameRoom() {
-  var nick = document.getElementById("player-name").value;
+async function loadGameRoom() {
+  const user = await getUser();
 
-  // If nick is empty or if it has the default value,
-  if (nick == "" || nick == "Player_1") {
-    infoPanel(true, "Please choose your <strong>name</strong> !", 2000);
-
-    document.getElementById("player-name").focus();
-
-    return false;
-  } else {
-    // Else store it in sessionStorage if available
-
-    if (typeof sessionStorage != "undefined") {
-      sessionStorage.setItem("playerName", nick);
-    }
-  }
+  var nick = user.display_name;
 
   // Unbind button event to prevent "space click"
   document.getElementById("player-connection").onclick = function () {
