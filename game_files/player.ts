@@ -14,23 +14,25 @@ const MAX_ROTATION = -10;
 const MIN_ROTATION = 60;
 const ROTATION_SPEED = 8;
 
+export type PlayerTinyObject = {
+  id: string;
+  nick: string;
+  color: number;
+  rotation: number;
+  score: number;
+  best_score: number;
+  state: PlayerStateEnum;
+  posX: number;
+  posY: number;
+  floor: number;
+};
+
 export default class Player {
   private _socket: any;
   private _speedY: number;
   private _rank: number;
   private _lastPipe: number;
-  private _playerTinyObject: {
-    id: string;
-    nick: string;
-    color: number;
-    rotation: number;
-    score: number;
-    best_score: number;
-    state: PlayerStateEnum;
-    posX: number;
-    posY: number;
-    floor: number;
-  };
+  private _playerTinyObject: PlayerTinyObject;
 
   constructor(socket: any, uid: string, color: number) {
     this._socket = socket;

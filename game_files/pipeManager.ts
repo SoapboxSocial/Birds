@@ -55,13 +55,12 @@ export default class PipeManager extends EventEmitter {
   getPotentialPipeHit() {
     let pipes = [];
     let nbPipes = _pipeList.length;
-    let i;
 
     // In multiplayer mode, just check the first 2 pipes
     // because the other ones are too far from the players
     if (nbPipes > MAX_PIPE_CHECK_COLLISION) nbPipes = MAX_PIPE_CHECK_COLLISION;
 
-    for (i = 0; i < nbPipes; i++) {
+    for (let i = 0; i < nbPipes; i++) {
       pipes.push(_pipeList[i].getPipeObject());
     }
 

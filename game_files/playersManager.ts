@@ -71,7 +71,7 @@ export default class PlayersManager extends EventEmitter {
     this.emit("players-ready");
   }
 
-  getPlayerList(specificState: PlayerStateEnum) {
+  getPlayerList(specificState?: PlayerStateEnum) {
     let players = [];
 
     for (let i = 0; i < _playersList.length; i++) {

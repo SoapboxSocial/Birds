@@ -1,7 +1,8 @@
 import { constants as Const } from "../constants";
-import { Bird, Pipe } from "../shared";
+import { PipeTinyObject } from "./pipe";
+import Player from "./player";
 
-function checkBirdCollision(pipe: Pipe, birdInstance: Bird) {
+function checkBirdCollision(pipe: PipeTinyObject, birdInstance: Player) {
   const bird = birdInstance.getPlayerObject();
 
   // If the bird is inside a pipe on the X axis, check if he touch it
@@ -28,14 +29,11 @@ function checkBirdCollision(pipe: Pipe, birdInstance: Bird) {
   return bird.posY + Const.BIRD_HEIGHT > bird.floor;
 }
 
-export function checkCollision(pipe: Pipe[], birdsList: Bird[]) {
+export function checkCollision(pipe: PipeTinyObject[], birdsList: Player[]) {
   let thereIsCollision = false;
 
-  let i;
-  let j;
-
-  for (i = 0; i < pipe.length; i++) {
-    for (j = 0; j < birdsList.length; j++) {
+  for (let i = 0; i < pipe.length; i++) {
+    for (let j = 0; j < birdsList.length; j++) {
       if (checkBirdCollision(pipe[i], birdsList[j]) == true) {
         // Change player state to died
         birdsList[j].sorryYouAreDie(birdsList.length);

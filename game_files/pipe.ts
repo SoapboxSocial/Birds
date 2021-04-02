@@ -1,11 +1,13 @@
 import { constants as Const } from "../constants";
 
+export type PipeTinyObject = {
+  id: number;
+  posX: number;
+  posY: number;
+};
+
 export default class Pipe {
-  private readonly _pipeTinyObject: {
-    id: number;
-    posX: number;
-    posY: number;
-  };
+  private readonly _pipeTinyObject: PipeTinyObject;
 
   constructor(lastPipePosX: number) {
     this._pipeTinyObject = {
