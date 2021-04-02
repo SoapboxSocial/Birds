@@ -2,7 +2,7 @@
 const constant = {
   SERVER_PORT: 4242,
   SOCKET_PORT: 1337,
-  SOCKET_ADDR: "https://soapbox-apps-server-e782y.ondigitalocean.app",
+  SOCKET_ADDR: "https://birds-tazyr.ondigitalocean.app",
 
   SCREEN_WIDTH: 900,
   SCREEN_HEIGHT: 768,
