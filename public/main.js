@@ -2,40 +2,49 @@ import * as canvasPainter from "./modules/canvasPainter.js";
 import { PlayerManager as PlayersManager } from "./modules/playersManager.js";
 import { Const } from "./modules/sharedConstants.js";
 
-var enumState = {
+const enumState = {
   Login: 0,
   WaitingRoom: 1,
   OnGame: 2,
   Ranking: 3,
 };
 
-var enumPanels = {
+const enumPanels = {
   Login: "gs-login",
   Ranking: "gs-ranking",
   HighScores: "gs-highscores",
   Error: "gs-error",
 };
 
-var _gameState = enumState.Login,
-  _playerManager,
-  _pipeList,
-  _isCurrentPlayerReady = false,
-  _userID = null,
-  _lastTime = null,
-  _rankingTimer,
-  _ranking_time,
-  _isTouchDevice = false,
-  _socket,
-  _infPanlTimer,
-  _isNight = false;
+var _gameState = enumState.Login;
+var _playerManager;
+var _pipeList;
+var _isCurrentPlayerReady = false;
+var _userID = null;
+var _lastTime = null;
+var _rankingTimer;
+var _ranking_time;
+var _isTouchDevice = false;
+var _socket;
+var _infPanlTimer;
+var _isNight = false;
 
+requestAnimationFrame = window.requestAnimationFrame;
+
+/**
+ * @name draw
+ *
+ * @param {number} currentTime
+ * @param {number} ellapsedTime
+ */
 function draw(currentTime, ellapsedTime) {
   // If player score is > 15, night !!
   if (
     _gameState == enumState.OnGame &&
     _playerManager.getCurrentPlayer().getScore() == 15
-  )
+  ) {
     _isNight = true;
+  }
 
   canvasPainter.draw(
     currentTime,
@@ -47,47 +56,61 @@ function draw(currentTime, ellapsedTime) {
   );
 }
 
-requestAnimationFrame =
-  window.requestAnimationFrame ||
-  window.mozRequestAnimationFrame ||
-  window.webkitRequestAnimationFrame ||
-  window.msRequestAnimationFrame;
-
+/**
+ * @name gameLoop
+ * Handles game loop logic
+ */
 function gameLoop() {
-  var now = new Date().getTime(),
-    ellapsedTime = 0;
+  var now = new Date().getTime();
+
+  var ellapsedTime = 0;
 
   // Call for next anim frame
-  if (_gameState == enumState.OnGame) requestAnimationFrame(gameLoop);
+  if (_gameState === enumState.OnGame) requestAnimationFrame(gameLoop);
 
   // Get time difference between the last call and now
   if (_lastTime) {
     ellapsedTime = now - _lastTime;
   }
+
   _lastTime = now;
 
   // Call draw with the ellapsed time between the last frame and the current one
   draw(now, ellapsedTime);
 }
 
+/**
+ * @name lobbyLoop
+ *
+ * Handles idle state for players in the lobby
+ */
 function lobbyLoop() {
   var now = new Date().getTime();
 
   // Call for next anim frame
-  if (_gameState == enumState.WaitingRoom) requestAnimationFrame(lobbyLoop);
+  if (_gameState === enumState.WaitingRoom) {
+    requestAnimationFrame(lobbyLoop);
+  }
 
   // Call draw with the ellapsed time between the last frame and the current one
   draw(now, 0);
 }
 
+/**
+ * @name startClient
+ * Starts up the game and connects to Socket.io
+ */
 function startClient() {
-  if (typeof io == "undefined") {
+  if (typeof io === "undefined") {
     document.getElementById("gs-error-message").innerHTML =
       "Cannot retreive socket.io file at the address " +
       Const.SOCKET_ADDR +
       "<br/><br/>Please provide a valid address.";
+
     showHideMenu(enumPanels.Error, true);
+
     console.log("Cannot reach socket.io file !");
+
     return;
   }
 
@@ -95,9 +118,11 @@ function startClient() {
 
   document.getElementById("gs-loader-text").innerHTML =
     "Connecting to the server...";
+
   _socket = io.connect(Const.SOCKET_ADDR + ":" + Const.SOCKET_PORT, {
     reconnect: false,
   });
+
   _socket.on("connect", function () {
     console.log("Connection established :)");
 
@@ -105,11 +130,13 @@ function startClient() {
     _socket.on("disconnect", function () {
       document.getElementById("gs-error-message").innerHTML =
         "Connection with the server lost";
+
       showHideMenu(enumPanels.Error, true);
+
       console.log("Connection with the server lost :( ");
     });
 
-    // Try to retreive previous player name if exists
+    // Try to retrieve previous player name if exists
     if (typeof sessionStorage != "undefined") {
       if ("playerName" in sessionStorage) {
         document.getElementById("player-name").value = sessionStorage.getItem(
@@ -120,29 +147,41 @@ function startClient() {
 
     // Draw bg and bind button click
     draw(0, 0);
+
     showHideMenu(enumPanels.Login, true);
+
     document.getElementById("player-connection").onclick = loadGameRoom;
   });
 
   _socket.on("error", function () {
     document.getElementById("gs-error-message").innerHTML =
       "Fail to connect the WebSocket to the server.<br/><br/>Please check the WS address.";
+
     showHideMenu(enumPanels.Error, true);
+
     console.log("Cannot connect the web_socket ");
   });
 }
 
+/**
+ * @name loadGameRoom
+ * Handles loading the current game for the user
+ *
+ * @returns boolean
+ */
 function loadGameRoom() {
   var nick = document.getElementById("player-name").value;
 
   // If nick is empty or if it has the default value,
   if (nick == "" || nick == "Player_1") {
     infoPanel(true, "Please choose your <strong>name</strong> !", 2000);
+
     document.getElementById("player-name").focus();
+
     return false;
-  }
-  // Else store it in sessionstorage if available
-  else {
+  } else {
+    // Else store it in sessionStorage if available
+
     if (typeof sessionStorage != "undefined") {
       sessionStorage.setItem("playerName", nick);
     }
@@ -155,42 +194,48 @@ function loadGameRoom() {
 
   // Bind new socket events
   _socket.on("player_list", function (playersList) {
-    var nb = playersList.length,
-      i;
-
     // Add this player in the list
-    for (i = 0; i < nb; i++) {
+    for (let i = 0; i < playersList.length; i++) {
       _playerManager.addPlayer(playersList[i], _userID);
     }
 
     // Redraw
     draw(0, 0);
   });
+
   _socket.on("player_disconnect", function (player) {
     _playerManager.removePlayer(player);
   });
+
   _socket.on("new_player", function (player) {
     _playerManager.addPlayer(player);
   });
+
   _socket.on("player_ready_state", function (playerInfos) {
     _playerManager
       .getPlayerFromId(playerInfos.id)
       .updateFromServer(playerInfos);
   });
+
   _socket.on("update_game_state", function (gameState) {
     changeGameState(gameState);
   });
+
   _socket.on("game_loop_update", function (serverDatasUpdated) {
     console.log(serverDatasUpdated);
+
     _playerManager.updatePlayerListFromServer(serverDatasUpdated.players);
+
     _pipeList = serverDatasUpdated.pipes;
   });
+
   _socket.on("ranking", function (score) {
     displayRanking(score);
   });
 
   // Send nickname to the server
   console.log("Send nickname " + nick);
+
   _socket.emit(
     "say_hi",
     nick,
@@ -215,7 +260,7 @@ function loadGameRoom() {
   );
 
   // Get input
-  if (_isTouchDevice == false) {
+  if (_isTouchDevice === false) {
     document.addEventListener("keydown", function (event) {
       if (event.keyCode == 32) {
         inputsManager();
@@ -225,19 +270,32 @@ function loadGameRoom() {
     var evt = window.navigator.msPointerEnabled
       ? "MSPointerDown"
       : "touchstart";
+
     document.addEventListener(evt, inputsManager);
   }
 
   // Hide login screen
   showHideMenu(enumPanels.Login, false);
+
   return false;
 }
 
+/**
+ * @name displayRanking
+ * Handles the scoreboard for the users
+ *
+ * @param {{
+ *  rank: number;
+ *  score: number;
+ *  bestScore: number;
+ *  nbPlayers: number;
+ *  highscores: {player: string; score: number;}[]
+ * }} score
+ */
 function displayRanking(score) {
-  var nodeMedal = document.querySelector(".gs-ranking-medal"),
-    nodeHS = document.getElementById("gs-highscores-scores"),
-    i,
-    nbHs;
+  var nodeMedal = document.querySelector(".gs-ranking-medal");
+
+  var nodeHS = document.getElementById("gs-highscores-scores");
 
   console.log(score);
 
@@ -253,14 +311,18 @@ function displayRanking(score) {
     score.rank + " / " + score.nbPlayers;
 
   // Set medal !
-  if (score.rank == 1) nodeMedal.classList.add("winner");
-  else if (score.rank == 2) nodeMedal.classList.add("second");
-  else if (score.rank == 3) nodeMedal.classList.add("third");
+  if (score.rank == 1) {
+    nodeMedal.classList.add("winner");
+  } else if (score.rank == 2) {
+    nodeMedal.classList.add("second");
+  } else if (score.rank == 3) {
+    nodeMedal.classList.add("third");
+  }
 
-  // Display hish scores
+  // Display high scores
   nodeHS.innerHTML = "";
-  nbHs = score.highscores.length;
-  for (i = 0; i < nbHs; i++) {
+
+  for (let i = 0; i < score.highscores.length; i++) {
     nodeHS.innerHTML +=
       "<li><span>#" +
       (i + 1) +
@@ -281,9 +343,16 @@ function displayRanking(score) {
 
   // reset graphics in case to prepare the next game
   canvasPainter.resetForNewGame();
+
   _isNight = false;
 }
 
+/**
+ * @name changeGameState
+ * Handles changing the game state
+ *
+ * @param {number} gameState
+ */
 function changeGameState(gameState) {
   var strLog = "Server just change state to ";
 
