@@ -1,10 +1,15 @@
 import PlayersManager from "./playersManager";
 import PipeManager from "./pipeManager";
-import {ServerStateEnum} from "./shared"
 import {PlayerState, ServerState} from "./enums";
 import Player, {PlayerTinyObject} from "./player";
-import { constants as Const } from "../../constants";
+import { constants as Const  } from "../../constants";
 import {checkCollision} from "./collisionEngine";
+
+export enum ServerStateEnum {
+    WaitingForPlayers = 1,
+    OnGame = 2,
+    Ranking = 3,
+}
 
 export default class Instance {
     private playersManager: PlayersManager;
@@ -26,7 +31,6 @@ export default class Instance {
     }
 
     start() {
-
         this.playersManager.on("players-ready", () => {
             this.startGameLoop();
         });
@@ -35,10 +39,12 @@ export default class Instance {
             // Create a pipe and send it to clients
             var pipe = this.pipeManager.newPipe();
         });
-
     }
 
     handle(socket: any) {
+
+        this.sockets.push(socket)
+
         // Add new player
         let player = this.playersManager.addNewPlayer(socket, socket.id);
 

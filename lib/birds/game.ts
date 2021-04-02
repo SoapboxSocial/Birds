@@ -7,6 +7,7 @@ import { constants as Const } from "../../constants";
 let io: any;
 
 let _instance = new Instance()
+_instance.start()
 
 export function startServer() {
   io = require("socket.io").listen(Const.SOCKET_PORT);
@@ -14,9 +15,6 @@ export function startServer() {
   io.configure(function () {
     io.set("log level", 2);
   });
-
-  _instance.start()
-
 
   // On new client connection
   io.sockets.on("connection", function (socket: any) {
