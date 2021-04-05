@@ -136,6 +136,7 @@ async function startClient(nick) {
     "Connecting to the server...";
 
   _socket = io.connect("/api", {
+    resource: "/api/socket.io",
     query: `roomID=${roomID}`,
     reconnect: false,
   });
