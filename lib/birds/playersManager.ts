@@ -7,7 +7,6 @@ import Scores from "./scoreSystem";
 const NB_AVAILABLE_BIRDS_COLOR = 4;
 
 export default class PlayersManager extends EventEmitter {
-
   private playersList: Player[] = [];
   private posOnGrid = 0;
   private scores = new Scores();
@@ -140,7 +139,10 @@ export default class PlayersManager extends EventEmitter {
   sendPlayerScore() {
     // Save player score
     for (let i = 0; i < this.playersList.length; i++) {
-      this.scores.savePlayerScore(this.playersList[i], this.playersList[i].getScore());
+      this.scores.savePlayerScore(
+        this.playersList[i],
+        this.playersList[i].getScore()
+      );
     }
 
     // Retrieve highscores and then send scores to players

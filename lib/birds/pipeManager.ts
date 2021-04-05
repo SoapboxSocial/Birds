@@ -7,7 +7,6 @@ let SPAWN_PIPE_ALERT = Const.SCREEN_WIDTH;
 let MAX_PIPE_CHECK_COLLISION = 3;
 
 export default class PipeManager extends EventEmitter {
-
   private pipeList: Pipe[] = [];
 
   newPipe() {
