@@ -1,6 +1,5 @@
-import { constants as Const } from "./constants";
 import Game from "./lib/birds/game";
-import io from "socket.io";
+import { constants as Const } from "./constants";
 
 /**
  * @todo convert to Socket.io instance
@@ -21,6 +20,16 @@ function getOrCreate(room: string) {
   return games[room];
 }
 
+function deleteGame(room: string) {
+  if (!(room in games)) {
+    return;
+  }
+
+  games[room].stop();
+
+  delete games[room];
+}
+
 export function start() {
   io = require("socket.io").listen(Const.SOCKET_PORT);
 
@@ -30,13 +39,19 @@ export function start() {
 
   // On new client connection
   io.sockets.on("connection", function (socket: any) {
-    let id = socket.handshake.query.roomID;
+    let id = socket.handshake.query.roomID as string;
 
     if (id === "" || id === undefined) {
       socket.disconnect();
 
       return;
     }
+
+    socket.on("close_game", () => {
+      console.log("Delete the game");
+
+      deleteGame(id);
+    });
 
     getOrCreate(id).handle(socket);
   });
