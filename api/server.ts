@@ -1,5 +1,6 @@
 import { constants as Const } from "./constants";
 import Game from "./lib/birds/game";
+import io from "socket.io";
 
 /**
  * @todo convert to Socket.io instance
