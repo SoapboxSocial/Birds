@@ -499,6 +499,12 @@ emitter.on("user", (event) => {
   }
 });
 
+emitter.on("closed", () => {
+  console.log("Handling closing the game");
+
+  _socket.emit("close_game");
+});
+
 // Load resources and Start the client !
 console.log("Client started, load resources...");
 

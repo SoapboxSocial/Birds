@@ -20,6 +20,10 @@ function getOrCreate(room: string) {
   return games[room];
 }
 
+function deleteGame(room: string) {
+  delete games[room];
+}
+
 export function start() {
   io = require("socket.io").listen(Const.SOCKET_PORT);
 
@@ -38,6 +42,16 @@ export function start() {
     }
 
     getOrCreate(id).handle(socket);
+  });
+
+  io.sockets.on("close_game", function (socket: any) {
+    let id = socket.handshake.query.roomID;
+
+    console.log("Disconnect the user's socket");
+    socket.disconnect();
+
+    console.log("Delete the game");
+    deleteGame(id);
   });
 
   console.log(
