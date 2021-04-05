@@ -1,3 +1,5 @@
+import Player from "./player";
+
 /*
  * This class will store the best score of all players.
  * It will try to reach a DB by default (best way to store datas). But if you don't have a MySQL server or if the class
@@ -13,10 +15,7 @@ export default class ScoreSystem {
     this._bestScore = {};
   }
 
-  /**
-   * @todo Change 'player' to Player class type
-   */
-  setPlayerHighScore(player: any) {
+  setPlayerHighScore(player: Player) {
     const nick = player.getNick();
 
     if (typeof this._bestScore[nick] !== "undefined") {
@@ -26,10 +25,7 @@ export default class ScoreSystem {
     }
   }
 
-  /**
-   * @todo Change 'player' to Player class type
-   */
-  savePlayerScore(player: any, lastScore: number) {
+  savePlayerScore(player: Player, lastScore: number) {
     const nick = player.getNick();
 
     const highScore = player.getHighScore();
@@ -39,36 +35,23 @@ export default class ScoreSystem {
       this._bestScore[nick] = lastScore;
 
       console.info(
-        nick +
-          " new high score (" +
-          lastScore +
-          ") was saved in the score array !"
+        `${nick} new high score (${lastScore}) was saved in the score array !`
       );
     }
   }
 
   getHighScores(
-    callback: (
-      hsArray: {
-        player: string;
-        score: number;
-      }[]
-    ) => void
+    callback: (highScores: { player: string; score: number }[]) => void
   ) {
-    const sortedScores = Object.fromEntries(
-      Object.entries(this._bestScore).sort(([, a], [, b]) => a - b)
+    const highScores = Object.entries(this._bestScore).map(
+      ([player, score]) => ({
+        player,
+        score,
+      })
     );
 
-    // Return the NUMBER_OF_HIGHSCORES_TO_RETREIVE best scores
-    let hsArray = [];
+    const sortedHighScores = highScores.sort((a, b) => b.score - a.score);
 
-    for (const key in sortedScores) {
-      hsArray.push({
-        player: key,
-        score: this._bestScore[key],
-      });
-    }
-
-    callback(hsArray);
+    callback(sortedHighScores);
   }
 }
