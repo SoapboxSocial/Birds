@@ -460,6 +460,8 @@ else _isTouchDevice = false;
 
 const sequence = Date.now();
 
+console.log("Creating sequence", sequence);
+
 window.webkit = {
   messageHandlers: {
     user: {
@@ -488,6 +490,8 @@ emitter.on("user", (event) => {
     console.log("Sequence correct, start client");
 
     startClient(event.data.display_name);
+  } else {
+    console.log("Sequence incorrect, client not starting");
   }
 });
 
