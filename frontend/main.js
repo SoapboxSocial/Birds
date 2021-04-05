@@ -244,8 +244,8 @@ function loadGameRoom(nick) {
       } else {
         // Display a little help text
         if (_isTouchDevice == false)
-          infoPanel(true, "Press <strong>space</strong> to fly !", 3000);
-        else infoPanel(true, "<strong>Tap</strong> to fly !", 3000);
+          infoPanel(true, "Press <strong>space</strong> to fly !", 5000);
+        else infoPanel(true, "<strong>Tap</strong> to fly !", 5000);
       }
     }
   );
