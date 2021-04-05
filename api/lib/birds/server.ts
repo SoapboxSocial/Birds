@@ -47,9 +47,6 @@ export function start() {
     }
 
     socket.on("close_game", function (socket: any) {
-      console.log("Disconnect the user's socket");
-      socket.disconnect();
-
       console.log("Delete the game");
       deleteGame(id);
     });
