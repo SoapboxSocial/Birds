@@ -15,7 +15,7 @@ services:
     source_dir: api
     name: api
     routes:
-      - path: /api
+      - path: /
     run_command: yarn start
 
 static_sites:
@@ -27,4 +27,4 @@ static_sites:
     name: frontend
     source_dir: frontend
     routes:
-      - path: /
+      - path: /birds
