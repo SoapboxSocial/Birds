@@ -116,12 +116,7 @@ console.log({ roomID });
 async function startClient(nick) {
   if (typeof io === "undefined") {
     document.getElementById("gs-error-message").innerHTML =
-      "Cannot retreive socket.io file at the address " +
-      window.location.protocol +
-      "//" +
-      window.location.hostname +
-      "/api" +
-      "<br/><br/>Please provide a valid address.";
+      "Cannot retrieve socket.io file";
 
     showHideMenu(enumPanels.Error, true);
 
@@ -465,6 +460,8 @@ else _isTouchDevice = false;
 
 const sequence = Date.now();
 
+console.log("Creating sequence", sequence);
+
 window.webkit = {
   messageHandlers: {
     user: {
@@ -493,6 +490,8 @@ emitter.on("user", (event) => {
     console.log("Sequence correct, start client");
 
     startClient(event.data.display_name);
+  } else {
+    console.log("Sequence incorrect, client not starting");
   }
 });
 

@@ -15,10 +15,10 @@ var NB_RESOURCES_TO_LOAD = 2;
 
 // Birds sprites
 var BIRDS_SPRITES = [
-  "images/clumsy.png",
-  "images/clumsy-blue.png",
-  "images/clumsy-red.png",
-  "images/clumsy-multi.png",
+  "birds/images/clumsy.png",
+  "birds/images/clumsy-blue.png",
+  "birds/images/clumsy-red.png",
+  "birds/images/clumsy-multi.png",
 ];
 
 var ctx = document.getElementById("gs-canvas").getContext("2d");
@@ -154,7 +154,7 @@ export function loadResources(onReadyCallback) {
 
   // Load ground
   _picGround = new Image();
-  _picGround.src = "images/ground.png";
+  _picGround.src = "birds/images/ground.png";
   _picGround.onload = function () {
     onResourceLoaded(onReadyCallback);
   };
@@ -170,7 +170,7 @@ export function loadResources(onReadyCallback) {
 
   // Load pipe
   _picPipe = new Image();
-  _picPipe.src = "images/pipe.png";
+  _picPipe.src = "birds/images/pipe.png";
   _picPipe.onload = function () {
     onResourceLoaded(onReadyCallback);
   };

@@ -2,31 +2,31 @@ import { Const } from "./sharedConstants.js";
 
 export const BgResources = [
   {
-    nightSrc: "images/night.png",
+    nightSrc: "birds/images/night.png",
     width: 500,
     height: 768,
     posY: 0,
     speed: Const.LEVEL_SPEED / 4,
   },
   {
-    daySrc: "images/clouds.png",
-    nightSrc: "images/night-clouds.png",
+    daySrc: "birds/images/clouds.png",
+    nightSrc: "birds/images/night-clouds.png",
     width: 300,
     height: 256,
     posY: window.innerHeight - 352,
     speed: Const.LEVEL_SPEED / 3,
   },
   {
-    daySrc: "images/city.png",
-    nightSrc: "images/night-city.png",
+    daySrc: "birds/images/city.png",
+    nightSrc: "birds/images/night-city.png",
     width: 300,
     height: 256,
     posY: window.innerHeight - 352,
     speed: Const.LEVEL_SPEED / 2,
   },
   {
-    daySrc: "images/trees.png",
-    nightSrc: "images/night-trees.png",
+    daySrc: "birds/images/trees.png",
+    nightSrc: "birds/images/night-trees.png",
     width: 300,
     height: 216,
     posY: window.innerHeight - 312,
