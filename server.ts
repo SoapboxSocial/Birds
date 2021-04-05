@@ -19,10 +19,6 @@ app.get("/birds", (req, res) => {
   res.sendFile(`${__dirname}/birds.html`);
 });
 
-app.get("/sharedConstants.js", (req, res) => {
-  res.sendFile(`${__dirname}/sharedConstants.js`);
-});
-
 /**
  * Setup
  */
