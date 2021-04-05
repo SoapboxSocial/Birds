@@ -36,7 +36,7 @@ export function checkCollision(pipe: PipeTinyObject[], birdsList: Player[]) {
     for (let j = 0; j < birdsList.length; j++) {
       if (checkBirdCollision(pipe[i], birdsList[j]) == true) {
         // Change player state to died
-        birdsList[j].sorryYouAreDie(birdsList.length);
+        birdsList[j].died(birdsList.length);
 
         thereIsCollision = true;
       }
