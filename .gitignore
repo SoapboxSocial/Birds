@@ -16,5 +16,7 @@ results
 npm-debug.log
 node_modules
 
+.DS_Store
+
 public/images/clumsy_flashy.png
 public/images/flappy_flippant.png
