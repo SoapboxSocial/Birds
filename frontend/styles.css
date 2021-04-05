@@ -205,11 +205,11 @@ canvas {
 }
 
 #gs-highscores-scores {
-  padding-top: 10px;
+  padding: 10px;
 
-  -webkit-columns: 2;
-  -moz-columns: 2;
-  columns: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px 10px;
 }
 
 #gs-highscores-scores li {
@@ -217,7 +217,6 @@ canvas {
   list-style-type: none;
   color: #463740;
   font-size: 32px;
-  margin: 0 0 15px 10px;
 
   color: white;
   text-shadow: 3px 0px 0px #40394a, 0px 3px 0px #40394a, -3px 0px 0px #40394a,
