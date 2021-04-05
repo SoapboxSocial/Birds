@@ -120,6 +120,7 @@ async function startClient(nick) {
       window.location.protocol +
       "//" +
       window.location.hostname +
+      "/api" +
       "<br/><br/>Please provide a valid address.";
 
     showHideMenu(enumPanels.Error, true);
@@ -134,7 +135,7 @@ async function startClient(nick) {
   document.getElementById("gs-loader-text").innerHTML =
     "Connecting to the server...";
 
-  _socket = io.connect("/", {
+  _socket = io.connect("/api", {
     query: `roomID=${roomID}`,
     reconnect: false,
   });
