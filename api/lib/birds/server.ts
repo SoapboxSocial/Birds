@@ -22,7 +22,7 @@ function getOrCreate(room: string) {
 
 export function start() {
   io = require("socket.io").listen(Const.SOCKET_PORT, {
-    resource: "api/socket.io",
+    resource: "/api",
   });
 
   io.configure(function () {
