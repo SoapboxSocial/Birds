@@ -13,13 +13,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
 /**
- * Routes
- */
-app.get("/birds", (req, res) => {
-  res.sendFile(`${__dirname}/birds.html`);
-});
-
-/**
  * Setup
  */
 app.set("PORT", Const.SERVER_PORT);

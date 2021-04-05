@@ -5,10 +5,8 @@
   "scripts": {
     "start": "node build/server.js",
     "dev": "nodemon -r dotenv/config server.ts",
-    "copy": "copyfiles birds.html public/**/**/**/* build",
-    "build": "tsc --project ./ && npm run copy",
-    "format": "prettier --write \"**/*.js\" \"**/*.ts\"",
-    "bundle": "esbuild client/main.js --bundle --minify --sourcemap --target=chrome58,firefox57,safari11,edge16 --outfile=build/public/main.js"
+    "build": "tsc --project",
+    "format": "prettier --write \"**/*.js\" \"**/*.ts\""
   },
   "dependencies": {
     "@soapboxsocial/minis.js": "^2.2.2",
