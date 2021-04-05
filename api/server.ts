@@ -6,11 +6,13 @@ import { constants as Const } from "./constants";
  */
 let io: any;
 
-let games: {
+type GamesMap = {
   [key: string]: Game;
-} = {};
+};
 
-function getOrCreate(room: string) {
+let games: GamesMap = {};
+
+function getOrCreateGame(room: string) {
   if (!(room in games)) {
     let game = new Game();
     game.start();
@@ -53,7 +55,7 @@ export function start() {
       deleteGame(id);
     });
 
-    getOrCreate(id).handle(socket);
+    getOrCreateGame(id).handle(socket);
   });
 
   console.log(
