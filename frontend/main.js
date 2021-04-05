@@ -128,7 +128,7 @@ async function startClient(nick) {
   document.getElementById("gs-loader-text").innerHTML =
     "Connecting to the server...";
 
-  _socket = io.connect("/", {
+  _socket = io.connect(Const.SOCKET_ADDR, {
     query: `roomID=${roomID}`,
     reconnect: false,
   });

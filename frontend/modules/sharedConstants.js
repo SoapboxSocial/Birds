@@ -1,4 +1,6 @@
 export const Const = {
+  SOCKET_ADDR: "/",
+
   SCREEN_WIDTH: 900,
   SCREEN_HEIGHT: 768,
   FLOOR_POS_Y: 672,
