@@ -489,9 +489,13 @@ emitter.on("user", (event) => {
   if (event.sequence === sequence) {
     console.log("Sequence correct, start client");
 
-    startClient(event.data.display_name);
+    if ("username" in event.data) {
+      startClient(event.data.username);
+    } else {
+      startClient(event.data.display_name);
+    }
   } else {
-    console.log("Sequence incorrect, client not starting");
+    console.log("Sequence incorrect, start client");
   }
 });
 
