@@ -112,7 +112,7 @@ export default class Player {
     return this._playerTinyObject.best_score;
   }
 
-  sorryYouAreDie(nbPlayersLeft: number) {
+  died(nbPlayersLeft: number) {
     this._rank = nbPlayersLeft;
 
     this._playerTinyObject.state = enums.PlayerState.Died;
