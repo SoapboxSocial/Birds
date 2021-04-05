@@ -21,7 +21,9 @@ function getOrCreate(room: string) {
 }
 
 export function start() {
-  io = require("socket.io").listen(Const.SOCKET_PORT);
+  io = require("socket.io").listen(Const.SOCKET_PORT, {
+    resource: "api/socket.io",
+  });
 
   io.configure(function () {
     io.set("log level", 2);
