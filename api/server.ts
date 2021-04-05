@@ -32,7 +32,7 @@ export function start() {
   const io = new Server(constants.SOCKET_PORT, {});
 
   // On new client connection
-  io.sockets.on("connection", function (socket: any) {
+  io.sockets.on("connection", (socket) => {
     let id = socket.handshake.query.roomID as string;
 
     if (id === "" || id === undefined) {
