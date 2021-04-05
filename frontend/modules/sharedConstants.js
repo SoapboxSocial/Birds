@@ -1,4 +1,6 @@
 export const Const = {
+  ASSET_PREFIX: "birds/",
+
   SOCKET_ADDR: "/",
 
   SCREEN_WIDTH: 900,
