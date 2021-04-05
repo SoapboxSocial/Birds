@@ -21,6 +21,12 @@ function getOrCreate(room: string) {
 }
 
 function deleteGame(room: string) {
+  if (!(room in games)) {
+    return;
+  }
+
+  games[room].stop();
+
   delete games[room];
 }
 
@@ -37,21 +43,18 @@ export function start() {
 
     if (id === "" || id === undefined) {
       socket.disconnect();
-
       return;
     }
 
+    socket.on("close_game", function (socket: any) {
+      console.log("Disconnect the user's socket");
+      socket.disconnect();
+
+      console.log("Delete the game");
+      deleteGame(id);
+    });
+
     getOrCreate(id).handle(socket);
-  });
-
-  io.sockets.on("close_game", function (socket: any) {
-    let id = socket.handshake.query.roomID;
-
-    console.log("Disconnect the user's socket");
-    socket.disconnect();
-
-    console.log("Delete the game");
-    deleteGame(id);
   });
 
   console.log(

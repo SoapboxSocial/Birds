@@ -30,6 +30,10 @@ export default class Game {
     this.timeStartGame = 0;
   }
 
+  stop() {
+    this.sockets.forEach((i) => i.disconnect());
+  }
+
   broadcast(from: any, event: string, data: any) {
     this.sockets
       .filter((i) => i.id != from)
