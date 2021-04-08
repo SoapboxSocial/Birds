@@ -70,9 +70,9 @@ export default class Game {
 
         // @ts-ignore
         player = null;
-      });
 
-      this.sockets = this.sockets.filter((i) => i.id != socket.id);
+        this.sockets = this.sockets.filter((i) => i.id != socket.id);
+      });
     });
 
     socket.on(
