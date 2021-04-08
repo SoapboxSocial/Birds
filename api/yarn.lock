@@ -1079,9 +1079,9 @@ socket.io-client@0.9.16:
     ws "0.4.x"
     xmlhttprequest "1.4.2"
 
-socket.io@~0.9:
+socket.io@^0.9.19:
   version "0.9.19"
-  resolved "https://registry.npmjs.org/socket.io/-/socket.io-0.9.19.tgz"
+  resolved "https://registry.yarnpkg.com/socket.io/-/socket.io-0.9.19.tgz#490bb5fd0dc54cf002ee04e67fadfc43b848a38f"
   integrity sha1-SQu1/Q3FTPAC7gTmf638Q7hIo48=
   dependencies:
     base64id "0.1.0"

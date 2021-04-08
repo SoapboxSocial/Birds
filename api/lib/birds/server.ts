@@ -39,7 +39,7 @@ export function start() {
 
   // On new client connection
   io.sockets.on("connection", function (socket: any) {
-    let id = socket.handshake.query.roomID;
+    let id = socket.handshake.query.roomID as string;
 
     if (id === "" || id === undefined) {
       socket.disconnect();
@@ -48,6 +48,7 @@ export function start() {
 
     socket.on("close_game", () => {
       console.log("Delete the game");
+
       deleteGame(id);
     });
 

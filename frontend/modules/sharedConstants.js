@@ -1,4 +1,8 @@
 export const Const = {
+  ASSET_PREFIX: "birds/",
+
+  SOCKET_ADDR: "/",
+
   SCREEN_WIDTH: 900,
   SCREEN_HEIGHT: 768,
   FLOOR_POS_Y: 672,
@@ -13,5 +17,5 @@ export const Const = {
   DISTANCE_BETWEEN_PIPES: 380,
   MIN_PIPE_HEIGHT: 60,
   MAX_PIPE_HEIGHT: 630,
-  HEIGHT_BETWEEN_PIPES: 150,
+  HEIGHT_BETWEEN_PIPES: 200,
 };

@@ -105,8 +105,6 @@ const urlParams = new URLSearchParams(window.location.search);
 
 const roomID = urlParams.get("roomID");
 
-console.log({ roomID });
-
 /**
  * @name startClient
  * Starts up the game and connects to Socket.io
@@ -130,7 +128,7 @@ async function startClient(nick) {
   document.getElementById("gs-loader-text").innerHTML =
     "Connecting to the server...";
 
-  _socket = io.connect("/", {
+  _socket = io.connect(Const.SOCKET_ADDR, {
     query: `roomID=${roomID}`,
     reconnect: false,
   });
@@ -147,15 +145,6 @@ async function startClient(nick) {
 
       console.log("Connection with the server lost :( ");
     });
-
-    // Try to retrieve previous player name if exists
-    if (typeof sessionStorage != "undefined") {
-      if ("playerName" in sessionStorage) {
-        document.getElementById("player-name").value = sessionStorage.getItem(
-          "playerName"
-        );
-      }
-    }
 
     // Draw bg and bind button click
     draw(0, 0);
@@ -244,8 +233,8 @@ function loadGameRoom(nick) {
       } else {
         // Display a little help text
         if (_isTouchDevice == false)
-          infoPanel(true, "Press <strong>space</strong> to fly !", 3000);
-        else infoPanel(true, "<strong>Tap</strong> to fly !", 3000);
+          infoPanel(true, "Press <strong>space</strong> to fly !", 5000);
+        else infoPanel(true, "<strong>Tap</strong> to fly !", 5000);
       }
     }
   );
@@ -416,8 +405,8 @@ function inputsManager() {
 }
 
 function showHideMenu(panelName, isShow) {
-  var panel = document.getElementById(panelName),
-    currentOverlayPanel = document.querySelector(".overlay");
+  var panel = document.getElementById(panelName);
+  var currentOverlayPanel = document.querySelector(".overlay");
 
   if (isShow) {
     if (currentOverlayPanel) currentOverlayPanel.classList.remove("overlay");

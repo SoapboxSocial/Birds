@@ -1,9 +1,9 @@
-import PlayersManager from "./playersManager";
-import PipeManager from "./pipeManager";
-import { PlayerState, ServerState } from "./enums";
-import Player, { PlayerTinyObject } from "./player";
 import { constants as Const } from "../../constants";
 import { checkCollision } from "./collisionEngine";
+import { PlayerState, ServerState } from "./enums";
+import PipeManager from "./pipeManager";
+import Player, { PlayerTinyObject } from "./player";
+import PlayersManager from "./playersManager";
 
 export enum GameStateEnum {
   WaitingForPlayers = 1,
