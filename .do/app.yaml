@@ -6,7 +6,7 @@ services:
   - build_command: yarn build
     environment_slug: node-js
     github:
-      branch: main
+      branch: rollback
       deploy_on_push: true
       repo: SoapboxSocial/Birds
     http_port: 1337
@@ -21,7 +21,7 @@ services:
 static_sites:
   - environment_slug: html
     github:
-      branch: main
+      branch: rollback
       deploy_on_push: true
       repo: SoapboxSocial/Birds
     name: frontend
