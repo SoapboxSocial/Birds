@@ -7,10 +7,6 @@ import { PlayerStateEnum } from "./shared";
 
 const NB_AVAILABLE_BIRDS_COLOR = 4;
 
-type PlayerOrPlayerObject<
-  T extends PlayerStateEnum | undefined
-> = T extends PlayerStateEnum ? Player : PlayerTinyObject;
-
 export default class PlayersManager extends EventEmitter {
   private playersList: Map<string, Player> = new Map();
   private posOnGrid = 0;
@@ -28,7 +24,7 @@ export default class PlayersManager extends EventEmitter {
     this.playersList.set(id, newPlayer);
 
     console.info(
-      `[PlayersManager] New player connected, there are currently ${this.playersList.keys.length} player(s)`
+      `[PlayersManager] New player connected, there are currently ${this.playersList.size} player(s)`
     );
 
     return newPlayer;
@@ -99,7 +95,7 @@ export default class PlayersManager extends EventEmitter {
   }
 
   getNumberOfPlayers() {
-    return this.playersList.keys.length;
+    return this.playersList.size;
   }
 
   updatePlayers(time: number) {
