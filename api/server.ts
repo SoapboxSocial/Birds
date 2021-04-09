@@ -28,29 +28,25 @@ function deleteGame(room: string) {
   delete games[room];
 }
 
-export function start() {
-  const io = new Server(constants.SOCKET_PORT, {});
+const io = new Server(constants.SOCKET_PORT, {
+  cors: { origin: "*" },
+});
 
-  // On new client connection
-  io.sockets.on("connection", (socket) => {
-    let id = socket.handshake.query.roomID as string;
+// On new client connection
+io.sockets.on("connection", (socket) => {
+  console.log(`${socket.id} connected!`);
 
-    if (id === "" || id === undefined) {
-      socket.disconnect();
+  const roomID = socket.handshake.query.roomID as string;
 
-      return;
-    }
+  if (roomID === "" || roomID === undefined) {
+    socket.disconnect();
 
-    socket.on("close_game", () => {
-      console.log("Delete the game");
+    return;
+  }
 
-      deleteGame(id);
-    });
+  socket.on("close_game", () => deleteGame(roomID));
 
-    getOrCreateGame(id).handle(socket);
-  });
+  getOrCreateGame(roomID).handle(socket);
+});
 
-  console.log(
-    "Game started and waiting for players on port " + constants.SOCKET_PORT
-  );
-}
+console.log(`[🐤 socket.io] listening on port ${constants.SOCKET_PORT}`);

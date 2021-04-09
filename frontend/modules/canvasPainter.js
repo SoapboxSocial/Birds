@@ -15,10 +15,10 @@ var NB_RESOURCES_TO_LOAD = 2;
 
 // Birds sprites
 var BIRDS_SPRITES = [
-  "birds/images/clumsy.png",
-  "birds/images/clumsy-blue.png",
-  "birds/images/clumsy-red.png",
-  "birds/images/clumsy-multi.png",
+  "images/clumsy.png",
+  "images/clumsy-blue.png",
+  "images/clumsy-red.png",
+  "images/clumsy-multi.png",
 ];
 
 var ctx = document.getElementById("gs-canvas").getContext("2d");
@@ -89,6 +89,16 @@ function drawScore(score) {
   ctx.fillText(score, posX, SCORE_POS_Y);
 }
 
+/**
+ *
+ * @param {number} currentTime
+ * @param {number} ellapsedTime
+ * @param {import("./playersManager").PlayerManager} playerManager
+ * @param {*} pipes
+ * @param {*} gameState
+ * @param {boolean} isNight
+ * @returns
+ */
 export function draw(
   currentTime,
   ellapsedTime,
@@ -97,9 +107,9 @@ export function draw(
   gameState,
   isNight
 ) {
-  var nb,
-    i,
-    players = playerManager.getPlayers();
+  var nb;
+  var i;
+  var players = playerManager.getPlayers();
 
   if (!_isReadyToDraw) {
     console.log("[ERROR] : Resources not yet loaded !");
@@ -154,7 +164,7 @@ export function loadResources(onReadyCallback) {
 
   // Load ground
   _picGround = new Image();
-  _picGround.src = "birds/images/ground.png";
+  _picGround.src = "images/ground.png";
   _picGround.onload = function () {
     onResourceLoaded(onReadyCallback);
   };
@@ -170,7 +180,7 @@ export function loadResources(onReadyCallback) {
 
   // Load pipe
   _picPipe = new Image();
-  _picPipe.src = "birds/images/pipe.png";
+  _picPipe.src = "images/pipe.png";
   _picPipe.onload = function () {
     onResourceLoaded(onReadyCallback);
   };

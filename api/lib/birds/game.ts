@@ -1,3 +1,4 @@
+import { Socket } from "socket.io";
 import { constants as Const } from "../../constants";
 import { checkCollision } from "./collisionEngine";
 import { PlayerState, ServerState } from "./enums";
@@ -19,7 +20,10 @@ export default class Game {
   private lastTime: number | null;
   private timer: NodeJS.Timeout | null;
 
-  private sockets: any[] = [];
+  /**
+   * Array of sockets (users)
+   */
+  private sockets: Socket[] = [];
 
   constructor() {
     this.playersManager = new PlayersManager();
@@ -51,28 +55,25 @@ export default class Game {
     });
   }
 
-  handle(socket: any) {
+  handle(socket: Socket) {
+    // Add new player to the array of users
     this.sockets.push(socket);
 
-    // Add new player
+    // Create a new player for the current socket
     let player = this.playersManager.addNewPlayer(socket, socket.id);
 
     // Register to socket events
     socket.on("disconnect", () => {
-      socket.get("PlayerInstance", (_: any, _player: Player) => {
-        this.playersManager.removePlayer(_player);
+      console.log(`${socket.id} disconnected!`);
 
-        this.broadcast(
-          socket.id,
-          "player_disconnect",
-          _player.getPlayerObject()
-        );
+      // Remove the player from the playersManager
+      this.playersManager.removePlayer(socket.id);
 
-        // @ts-ignore
-        player = null;
+      // Tell clients this player of ID has left the game
+      this.broadcast(socket.id, "player_disconnect", socket.id);
 
-        this.sockets = this.sockets.filter((i) => i.id != socket.id);
-      });
+      // Remove socket from array of sockets
+      this.sockets = this.sockets.filter((i) => i.id !== socket.id);
     });
 
     socket.on(
@@ -82,14 +83,11 @@ export default class Game {
         floor: number,
         fn: (gameState: GameStateEnum, playerId: string) => void
       ) => {
-        fn(this.state, player.getID());
+        fn(this.state, socket.id);
 
         this.playerLog(socket, nick, floor);
       }
     );
-
-    // Remember PlayerInstance and push it to the player list
-    socket.set("PlayerInstance", player);
   }
 
   updateGameState(newState: GameStateEnum, notifyClients: boolean) {
@@ -121,39 +119,38 @@ export default class Game {
     }
   }
 
-  playerLog(socket: any, nick: string, floor: number) {
-    // Retrieve PlayerInstance
-    socket.get("PlayerInstance", (error: any, player: Player) => {
-      if (error) {
-        console.error(error);
-        return;
+  playerLog(socket: Socket, nick: string, floor: number) {
+    const player = this.playersManager.getPlayer(socket.id);
+
+    if (typeof player === "undefined") {
+      console.error(`[playerLog] Player with id: ${socket.id} not found!`);
+
+      return;
+    }
+
+    socket.on("change_ready_state", (readyState: boolean) => {
+      // If the server is currently waiting for players, update ready state
+      if (this.state === ServerState.WaitingForPlayers) {
+        this.playersManager.changeLobbyState(socket.id, readyState);
+
+        this.broadcast(
+          socket.id,
+          "player_ready_state",
+          player.getPlayerObject()
+        );
       }
-
-      // Bind new client events
-      socket.on("change_ready_state", (readyState: boolean) => {
-        // If the server is currently waiting for players, update ready state
-        if (this.state === ServerState.WaitingForPlayers) {
-          this.playersManager.changeLobbyState(player, readyState);
-          this.broadcast(
-            socket.id,
-            "player_ready_state",
-            player.getPlayerObject()
-          );
-        }
-      });
-
-      socket.on("player_jump", function () {
-        player.jump();
-      });
-
-      // Set player's nickname and prepare him for the next game
-      this.playersManager.prepareNewPlayer(player, nick, floor);
-
-      // Notify new client about other players AND notify other about the new one ;)
-      socket.emit("player_list", this.playersManager.getPlayerList());
-
-      this.broadcast(socket.id, "new_player", player.getPlayerObject());
     });
+
+    // Handle player jumping
+    socket.on("player_jump", () => player.jump());
+
+    // Set player's nickname and prepare him for the next game
+    this.playersManager.prepareNewPlayer(player, nick, floor);
+
+    // Notify new client about other players AND notify other about the new one ;)
+    socket.emit("player_list", this.playersManager.getPlayerList());
+
+    this.broadcast(socket.id, "new_player", player.getPlayerObject());
   }
 
   gameOver() {
@@ -201,11 +198,11 @@ export default class Game {
     // Start timer
     this.timer = setInterval(() => {
       let now = new Date().getTime();
-      let ellapsedTime = 0;
+      let elapsedTime = 0;
 
       // get time difference between the last call and now
       if (this.lastTime) {
-        ellapsedTime = now - this.lastTime;
+        elapsedTime = now - this.lastTime;
       } else {
         this.timeStartGame = now;
       }
@@ -218,17 +215,16 @@ export default class Game {
       }
 
       // Update players position
-      this.playersManager.updatePlayers(ellapsedTime);
+      this.playersManager.updatePlayers(elapsedTime);
 
       // Update pipes
-      this.pipeManager.updatePipes(ellapsedTime);
+      this.pipeManager.updatePipes(elapsedTime);
 
       // Check collisions
       if (
         checkCollision(
           this.pipeManager.getPotentialPipeHit(),
-          // @ts-ignore
-          this.playersManager.getPlayerList(PlayerState.Playing)
+          this.playersManager.getPlayersListByState(PlayerState.Playing)
         )
       ) {
         if (!this.playersManager.arePlayersStillAlive()) {

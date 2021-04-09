@@ -18,10 +18,21 @@ const enumPanels = {
 };
 
 var _gameState = enumState.Login;
+
+/**
+ * @type {import("./modules/playersManager").PlayerManager}
+ */
 var _playerManager;
+
 var _pipeList;
 var _isCurrentPlayerReady = false;
+
+/**
+ * The socket ID of the current session
+ * @type {string}
+ */
 var _userID = null;
+
 var _lastTime = null;
 var _rankingTimer;
 var _ranking_time;
@@ -128,9 +139,9 @@ async function startClient(nick) {
   document.getElementById("gs-loader-text").innerHTML =
     "Connecting to the server...";
 
-  _socket = io.connect(Const.SOCKET_ADDR, {
-    query: `roomID=${roomID}`,
-    reconnect: false,
+  _socket = io(`http://localhost:1337`, {
+    query: { roomID: roomID },
+    reconnection: false,
   });
 
   _socket.on("connect", function () {
@@ -155,12 +166,12 @@ async function startClient(nick) {
   });
 
   _socket.on("error", function () {
+    console.log("Cannot connect the websocket");
+
     document.getElementById("gs-error-message").innerHTML =
-      "Fail to connect the WebSocket to the server.<br/><br/>Please check the WS address.";
+      "Failed to connect to the server.";
 
     showHideMenu(enumPanels.Error, true);
-
-    console.log("Cannot connect the web_socket ");
   });
 }
 
@@ -173,41 +184,83 @@ async function startClient(nick) {
  */
 function loadGameRoom(nick) {
   // Bind new socket events
-  _socket.on("player_list", function (playersList) {
-    // Add this player in the list
-    for (let i = 0; i < playersList.length; i++) {
-      _playerManager.addPlayer(playersList[i], _userID);
+  _socket.on(
+    "player_list",
+    /**
+     * @param {Array<{
+     * id: string;
+     * nick: string;
+     * color: number;
+     * rotation: number;
+     * score: number;
+     * best_score: number;
+     * state: 1 | 2 | 3 | 4;
+     * posX: number;
+     * posY: number;
+     * floor: number;
+     * }>} playersList
+     */
+    function (playersList) {
+      // Add current players to the PlayerManager
+      playersList.forEach((playerObject) => {
+        _playerManager.addPlayer(playerObject, _userID);
+      });
+
+      // Redraw
+      draw(0, 0);
     }
+  );
 
-    // Redraw
-    draw(0, 0);
-  });
-
-  _socket.on("player_disconnect", function (player) {
-    _playerManager.removePlayer(player);
-  });
+  _socket.on(
+    "player_disconnect",
+    /**
+     *
+     * @param {string} id The player's socket ID
+     */
+    function (id) {
+      _playerManager.removePlayer(id);
+    }
+  );
 
   _socket.on("new_player", function (player) {
     _playerManager.addPlayer(player);
   });
 
-  _socket.on("player_ready_state", function (playerInfos) {
-    _playerManager
-      .getPlayerFromId(playerInfos.id)
-      .updateFromServer(playerInfos);
-  });
+  _socket.on(
+    "player_ready_state",
+    /**
+     *
+     * @param {{ id: string; nick: string; color: number; rotation: number; score: number; best_score: number; state: 1 | 2 | 3 | 4; posX: number; posY: number; floor: number; }} playerInfos
+     */
+    function (playerInfos) {
+      const player = _playerManager.getPlayer(playerInfos.id);
+
+      if (typeof player === "undefined") {
+        return;
+      }
+
+      player.updateFromServer(playerInfos);
+    }
+  );
 
   _socket.on("update_game_state", function (gameState) {
     changeGameState(gameState);
   });
 
-  _socket.on("game_loop_update", function (serverDatasUpdated) {
-    console.log(serverDatasUpdated);
+  _socket.on(
+    "game_loop_update",
+    /**
+     *
+     * @param {{players: { id: string; nick: string; color: number; rotation: number; score: number; best_score: number; state: 1 | 2 | 3 | 4; posX: number; posY: number; floor: number; }[], pipes: { id: number; posX: number; posY: number; }[]}} data
+     */
+    function (data) {
+      console.log(data);
 
-    _playerManager.updatePlayerListFromServer(serverDatasUpdated.players);
+      _playerManager.updatePlayerListFromServer(data.players);
 
-    _pipeList = serverDatasUpdated.pipes;
-  });
+      _pipeList = data.pipes;
+    }
+  );
 
   _socket.on("ranking", function (score) {
     displayRanking(score);
@@ -220,8 +273,9 @@ function loadGameRoom(nick) {
     "say_hi",
     nick,
     window.innerHeight - 96,
-    function (serverState, uuid) {
-      _userID = uuid;
+    function (serverState, playerId) {
+      _userID = playerId;
+
       changeGameState(serverState);
 
       // Display a message according to the game state
@@ -232,9 +286,11 @@ function loadGameRoom(nick) {
         );
       } else {
         // Display a little help text
-        if (_isTouchDevice == false)
+        if (_isTouchDevice == false) {
           infoPanel(true, "Press <strong>space</strong> to fly !", 5000);
-        else infoPanel(true, "<strong>Tap</strong> to fly !", 5000);
+        } else {
+          infoPanel(true, "<strong>Tap</strong> to fly !", 5000);
+        }
       }
     }
   );
@@ -451,28 +507,28 @@ const sequence = Date.now();
 
 console.log("Creating sequence", sequence);
 
-// window.webkit = {
-//   messageHandlers: {
-//     user: {
-//       postMessage: (payload) => {
-//         console.log(
-//           "Handling message handler 'user' with sequence",
-//           payload.sequence
-//         );
+window.webkit = {
+  messageHandlers: {
+    user: {
+      postMessage: (payload) => {
+        console.log(
+          "Handling message handler 'user' with sequence",
+          payload.sequence
+        );
 
-//         emitter.emit("user", {
-//           sequence: payload.sequence,
-//           data: {
-//             display_name: "Bitch",
-//             id: 10,
-//             image: "fuck",
-//             username: "jeff",
-//           },
-//         });
-//       },
-//     },
-//   },
-// };
+        emitter.emit("user", {
+          sequence: payload.sequence,
+          data: {
+            display_name: "Jeff",
+            id: 71,
+            image: "jeff.png",
+            username: "jeff",
+          },
+        });
+      },
+    },
+  },
+};
 
 emitter.on("user", (event) => {
   if (event.sequence === sequence) {

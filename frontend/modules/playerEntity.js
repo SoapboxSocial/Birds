@@ -13,6 +13,11 @@ var COMPLETE_ANNIMATION_DURATION = 150;
 var ANIMATION_FRAME_NUMBER = 3;
 
 export class Player {
+  /**
+   *
+   * @param {{ id: string; nick: string; color: number; rotation: number; score: number; best_score: number; state: 1 | 2 | 3 | 4; posX: number; posY: number; floor: number; }} infos
+   * @param {string} uuid
+   */
   constructor(infos, uuid) {
     this._serverInfos = infos;
     this._isMe = false;
@@ -110,8 +115,11 @@ export class Player {
     ctx.restore();
   }
 
-  updateFromServer(infos) {
-    this._serverInfos = infos;
+  /**
+   * @param {{ id: string; nick: string; color: number; rotation: number; score: number; best_score: number; state: 1 | 2 | 3 | 4; posX: number; posY: number; floor: number; }} updatedPlayerObject
+   */
+  updateFromServer(updatedPlayerObject) {
+    this._serverInfos = updatedPlayerObject;
   }
 
   isCurrentPlayer() {

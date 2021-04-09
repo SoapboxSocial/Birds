@@ -1,89 +1,130 @@
 import { Player } from "./playerEntity.js";
 
-var _playerList;
-var _keyMatching;
-var _currentPlayer;
-
 export class PlayerManager {
+  /**
+   * @type {Map<string, Player>}
+   */
+  playersList;
+
+  /**
+   * @type {Array<string>}
+   */
+  playerIDs;
+
+  /**
+   * @type {string}
+   */
+  currentPlayerId;
+
   constructor() {
-    _playerList = new Array();
-    _keyMatching = new Array();
+    this.playersList = new Map();
+
+    this.playerIDs = [];
+
+    this.currentPlayerId = null;
   }
 
-  addPlayer(infos, playerID) {
-    var player;
+  /**
+   *
+   * @param {{
+   * id: string;
+   * nick: string;
+   * color: number;
+   * rotation: number;
+   * score: number;
+   * best_score: number;
+   * state: 1 | 2 | 3 | 4;
+   * posX: number;
+   * posY: number;
+   * floor: number;
+   * }} playerObject
+   * @param {string} id
+   * @returns
+   */
+  addPlayer(playerObject, id) {
+    if (this.playersList.has(id)) {
+      console.log(
+        `[PlayerManager] ${playerObject.nick} is already in the game.`
+      );
 
-    if (this.getPlayerFromId(infos.id) !== null) {
-      console.log(infos.nick + " is already in the list ! Adding aborted");
       return;
     }
 
-    // Create a player and push it into the player list
-    player = new Player(infos, playerID);
+    const player = new Player(playerObject, id);
 
-    _playerList.push(player);
-    // Add his ID in _keyMatching. WIth that, synchro with the server will be quick
-    // because we will don't need to iterate the player list to update it
-    _keyMatching[infos.id] = _playerList.length - 1;
+    this.playersList.set(id, player);
 
-    console.log("[" + player.getNick() + "] just join the game !");
-    console.log(player);
+    this.playerIDs.push(id);
 
-    if (player.isCurrentPlayer() == true) {
-      _currentPlayer = _playerList.length - 1;
+    console.log(`[PlayerManager] ${playerObject.nick} just joined the game!`);
+
+    if (player.isCurrentPlayer() === true) {
       console.log("Hey, it's me !");
+
+      this.currentPlayerId = id;
     }
   }
 
-  removePlayer(player) {
-    var pos = _keyMatching[player.id],
-      i;
+  /**
+   *
+   * @param {string} id
+   */
+  removePlayer(id) {
+    if (this.playersList.has(id)) {
+      console.log(`[PlayerManager] Removing player of id: ${id}`);
 
-    if (typeof pos == "undefined") {
-      console.log("Can't find the disconected player in list");
-    } else {
-      // Remove player from lists
-      console.log("Removing " + _playerList[pos].getNick());
-      _playerList.splice(pos, 1);
+      this.playersList.delete(id);
+    }
 
-      // Reset keys
-      _keyMatching = new Array();
-      for (i = 0; i < _playerList.length; i++) {
-        _keyMatching[_playerList[i].getId()] = i;
+    // var pos = _keyMatching[player.id],
+    //   i;
 
-        if (_playerList[i].isCurrentPlayer() == true) _currentPlayer = i;
+    // if (typeof pos == "undefined") {
+    //   console.log("Can't find the disconected player in list");
+    // } else {
+    //   // Remove player from lists
+    //   console.log("Removing " + _playerList[pos].getNick());
+    //   _playerList.splice(pos, 1);
+
+    //   // Reset keys
+    //   _keyMatching = new Array();
+    //   for (i = 0; i < _playerList.length; i++) {
+    //     _keyMatching[_playerList[i].getId()] = i;
+
+    //     if (_playerList[i].isCurrentPlayer() == true) _currentPlayer = i;
+    //   }
+    // }
+  }
+
+  /**
+   *
+   * @param {{ id: string; nick: string; color: number; rotation: number; score: number; best_score: number; state: 1 | 2 | 3 | 4; posX: number; posY: number; floor: number; }[]} updatedPlayerObjectArray
+   */
+  updatePlayerListFromServer(updatedPlayerObjectArray) {
+    updatedPlayerObjectArray.forEach((newPlayerData) => {
+      const player = this.playersList.get(newPlayerData.id);
+
+      if (typeof player === "undefined") {
+        return;
       }
-    }
-  }
 
-  updatePlayerListFromServer(playerlistUpdated) {
-    var nbUpdates = playerlistUpdated.length,
-      i;
-
-    for (i = 0; i < nbUpdates; i++) {
-      _playerList[_keyMatching[playerlistUpdated[i].id]].updateFromServer(
-        playerlistUpdated[i]
-      );
-    }
+      player.updateFromServer(newPlayerData);
+    });
   }
 
   getPlayers() {
-    return _playerList;
+    return Array.from(this.playersList).map(([, player]) => player);
   }
 
   getCurrentPlayer() {
-    return _playerList[_currentPlayer];
+    return this.playersList.get(currentPlayerId);
   }
 
-  getPlayerFromId(playerID) {
-    var nbPlayers = _playerList.length,
-      i;
-
-    for (i = 0; i < nbPlayers; i++) {
-      if (_playerList[i].getId() === playerID) return _playerList[i];
-    }
-
-    console.log("Can't find player in list");
-    return null;
+  /**
+   *
+   * @param {string} id
+   */
+  getPlayer(id) {
+    return this.playersList.get(id);
   }
 }
