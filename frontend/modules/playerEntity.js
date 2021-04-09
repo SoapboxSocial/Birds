@@ -16,7 +16,7 @@ export class Player {
   /**
    *
    * @param {{ id: string; nick: string; color: number; rotation: number; score: number; best_score: number; state: 1 | 2 | 3 | 4; posX: number; posY: number; floor: number; }} infos
-   * @param {string} uuid
+   * @param {string=} uuid
    */
   constructor(infos, uuid) {
     this._serverInfos = infos;
@@ -48,7 +48,7 @@ export class Player {
 
       // If it's an opponent, draw him with his name and an opacity
       if (this._isMe === false) {
-        ctx.globalAlpha = 0.6;
+        ctx.globalAlpha = 0.5;
         // Draw player name
         ctx.font = "25px mini_pixel";
         ctx.fillStyle = "#FFA24A";
