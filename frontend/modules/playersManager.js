@@ -7,19 +7,12 @@ export class PlayerManager {
   playersList;
 
   /**
-   * @type {Array<string>}
-   */
-  playerIDs;
-
-  /**
    * @type {string}
    */
   currentPlayerId;
 
   constructor() {
     this.playersList = new Map();
-
-    this.playerIDs = [];
   }
 
   /**
@@ -36,30 +29,26 @@ export class PlayerManager {
    * posY: number;
    * floor: number;
    * }} playerObject
-   * @param {string} id
+   * @param {string} playerId
    * @returns
    */
-  addPlayer(playerObject, id) {
-    if (this.playersList.has(id)) {
-      console.log(
-        `[PlayerManager] ${playerObject.nick} is already in the game.`
-      );
+  addPlayer(playerObject, playerId) {
+    if (this.playersList.has(playerObject.id)) {
+      console.log(`[PlayerManager] ${playerObject.id} is already in the game.`);
 
       return;
     }
 
-    const player = new Player(playerObject, id);
+    const player = new Player(playerObject, playerId);
 
-    this.playersList.set(id, player);
+    this.playersList.set(playerObject.id, player);
 
-    this.playerIDs.push(id);
-
-    console.log(`[PlayerManager] ${playerObject.nick} just joined the game!`);
+    console.log(`[PlayerManager] ${playerObject.id} just joined the game!`);
 
     if (player.isCurrentPlayer() === true) {
       console.log("[PlayerManager]", "is current user");
 
-      this.currentPlayerId = id;
+      this.currentPlayerId = playerId;
     }
   }
 
@@ -73,25 +62,6 @@ export class PlayerManager {
 
       this.playersList.delete(id);
     }
-
-    // var pos = _keyMatching[player.id],
-    //   i;
-
-    // if (typeof pos == "undefined") {
-    //   console.log("Can't find the disconected player in list");
-    // } else {
-    //   // Remove player from lists
-    //   console.log("Removing " + _playerList[pos].getNick());
-    //   _playerList.splice(pos, 1);
-
-    //   // Reset keys
-    //   _keyMatching = new Array();
-    //   for (i = 0; i < _playerList.length; i++) {
-    //     _keyMatching[_playerList[i].getId()] = i;
-
-    //     if (_playerList[i].isCurrentPlayer() == true) _currentPlayer = i;
-    //   }
-    // }
   }
 
   /**
