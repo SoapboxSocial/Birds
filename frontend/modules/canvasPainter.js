@@ -1,6 +1,6 @@
-import { BgResources } from "./backgroundResources.js";
-import { Const } from "./sharedConstants.js";
+import { BgResources, BIRDS_SPRITES, FgResources } from "./assets.js";
 import { ParallaxBg as Parallax } from "./parallax.js";
+import { Const } from "./sharedConstants.js";
 
 // Sprite resource dimensions
 var SPRITE_PIPE_HEIGHT = 768;
@@ -12,14 +12,6 @@ var SCORE_SHADOW_OFFSET = 5;
 
 // Resources
 var NB_RESOURCES_TO_LOAD = 2;
-
-// Birds sprites
-var BIRDS_SPRITES = [
-  "images/clumsy.png",
-  "images/clumsy-blue.png",
-  "images/clumsy-red.png",
-  "images/clumsy-multi.png",
-];
 
 var ctx = document.getElementById("gs-canvas").getContext("2d");
 var _isReadyToDraw = false;
@@ -164,7 +156,7 @@ export function loadResources(onReadyCallback) {
 
   // Load ground
   _picGround = new Image();
-  _picGround.src = "images/ground.png";
+  _picGround.src = FgResources.GROUND;
   _picGround.onload = function () {
     onResourceLoaded(onReadyCallback);
   };
@@ -180,7 +172,7 @@ export function loadResources(onReadyCallback) {
 
   // Load pipe
   _picPipe = new Image();
-  _picPipe.src = "images/pipe.png";
+  _picPipe.src = FgResources.PIPE;
   _picPipe.onload = function () {
     onResourceLoaded(onReadyCallback);
   };
