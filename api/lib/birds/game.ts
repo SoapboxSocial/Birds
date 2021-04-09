@@ -67,8 +67,8 @@ export default class Game {
     this.playersManager.addNewPlayer(socket, socket.id);
 
     // Register to socket events
-    socket.on("disconnect", () => {
-      console.log(`${socket.id} disconnected!`);
+    socket.on("disconnect", (reason) => {
+      console.log(`${socket.id} disconnected. reason`, reason);
 
       // Remove the player from the playersManager
       this.playersManager.removePlayer(socket.id);
