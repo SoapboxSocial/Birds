@@ -529,28 +529,28 @@ const sequence = Date.now();
 
 console.log("[setup] creating sequence", sequence);
 
-window.webkit = {
-  messageHandlers: {
-    user: {
-      postMessage: (payload) => {
-        console.log(
-          "[WebKit] Handling messageHandler 'user' with sequence",
-          payload.sequence
-        );
+// window.webkit = {
+//   messageHandlers: {
+//     user: {
+//       postMessage: (payload) => {
+//         console.log(
+//           "[WebKit] Handling messageHandler 'user' with sequence",
+//           payload.sequence
+//         );
 
-        emitter.emit("user", {
-          sequence: payload.sequence,
-          data: {
-            display_name: "Jeff",
-            id: 71,
-            image: "jeff.png",
-            username: "jeff",
-          },
-        });
-      },
-    },
-  },
-};
+//         emitter.emit("user", {
+//           sequence: payload.sequence,
+//           data: {
+//             display_name: "Jeff",
+//             id: 71,
+//             image: "jeff.png",
+//             username: "jeff",
+//           },
+//         });
+//       },
+//     },
+//   },
+// };
 
 emitter.on("user", (event) => {
   if (event.sequence === sequence) {
