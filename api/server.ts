@@ -34,7 +34,7 @@ const io = new Server(constants.SOCKET_PORT, {
 
 // On new client connection
 io.sockets.on("connection", (socket) => {
-  console.log(`${socket.id} connected!`);
+  console.log("[connection]", `socket with id: ${socket.id} connected!`);
 
   const roomID = socket.handshake.query.roomID as string;
 
@@ -44,7 +44,11 @@ io.sockets.on("connection", (socket) => {
     return;
   }
 
-  socket.on("close_game", () => deleteGame(roomID));
+  socket.on("close_game", () => {
+    console.log("[close_game]", `deleting game with roomID of ${roomID}`);
+
+    deleteGame(roomID);
+  });
 
   getOrCreateGame(roomID).handle(socket);
 });
