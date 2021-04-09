@@ -409,7 +409,7 @@ function displayRanking(score) {
  * @param {number} gameState
  */
 function changeGameState(gameState) {
-  var strLog = "Server just change state to ";
+  var strLog = "[changeGameState] Server just changed state to ";
 
   _gameState = gameState;
 
@@ -456,7 +456,7 @@ function changeGameState(gameState) {
       break;
 
     default:
-      console.log("Unknew game state [" + _gameState + "]");
+      console.log("[changeGameState] Unknown game state [" + _gameState + "]");
       strLog += "undefined state";
       break;
   }
@@ -528,14 +528,14 @@ else _isTouchDevice = false;
 
 const sequence = Date.now();
 
-console.log("Creating sequence", sequence);
+console.log("[setup] creating sequence", sequence);
 
 window.webkit = {
   messageHandlers: {
     user: {
       postMessage: (payload) => {
         console.log(
-          "Handling message handler 'user' with sequence",
+          "[WebKit] Handling messageHandler 'user' with sequence",
           payload.sequence
         );
 
@@ -555,7 +555,7 @@ window.webkit = {
 
 emitter.on("user", (event) => {
   if (event.sequence === sequence) {
-    console.log("Sequence correct, start client");
+    console.log("[setup] Sequence correct, start client");
 
     if ("username" in event.data) {
       startClient(event.data.username);
@@ -563,21 +563,21 @@ emitter.on("user", (event) => {
       startClient(event.data.display_name);
     }
   } else {
-    console.log("Sequence incorrect, start client");
+    console.log("[setup] Sequence incorrect, start client");
   }
 });
 
 emitter.on("closed", () => {
-  console.log("Handling closing the game");
+  console.log("[cleanup] Handling closing the game");
 
   _socket.emit("close_game");
 });
 
 // Load resources and Start the client !
-console.log("Client started, load resources...");
+console.log("[setup] Client started, load resources...");
 
 canvasPainter.loadResources(function () {
-  console.log("Resources loaded, connect to server...");
+  console.log("[CanvasPainter] Resources loaded, connect to server...");
 
   postMessage("user", { sequence });
 });

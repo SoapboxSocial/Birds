@@ -82,16 +82,17 @@ export default class PlayersManager extends EventEmitter {
   }
 
   getOnGamePlayerList() {
-    return Array.from(this.playersList).map(([, player]) => {
-      const playerState = player.getState();
+    return Array.from(this.playersList)
+      .map(([, player]) => player)
+      .filter((player) => {
+        const playerState = player.getState();
 
-      if (
-        playerState === enums.PlayerState.Playing ||
-        playerState === enums.PlayerState.Died
-      ) {
-        return player.getPlayerObject();
-      }
-    });
+        return (
+          playerState === enums.PlayerState.Playing ||
+          playerState === enums.PlayerState.Died
+        );
+      })
+      .map((player) => player.getPlayerObject());
   }
 
   getNumberOfPlayers() {
