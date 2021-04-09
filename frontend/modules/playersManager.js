@@ -20,8 +20,6 @@ export class PlayerManager {
     this.playersList = new Map();
 
     this.playerIDs = [];
-
-    this.currentPlayerId = null;
   }
 
   /**
@@ -59,7 +57,7 @@ export class PlayerManager {
     console.log(`[PlayerManager] ${playerObject.nick} just joined the game!`);
 
     if (player.isCurrentPlayer() === true) {
-      console.log("Hey, it's me !");
+      console.log("[PlayerManager]", "is current user");
 
       this.currentPlayerId = id;
     }
@@ -117,7 +115,7 @@ export class PlayerManager {
   }
 
   getCurrentPlayer() {
-    return this.playersList.get(currentPlayerId);
+    return this.playersList.get(this.currentPlayerId);
   }
 
   /**

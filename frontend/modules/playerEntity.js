@@ -138,6 +138,10 @@ export class Player {
     return this._serverInfos.score;
   }
 
+  /**
+   *
+   * @param {boolean} readyState
+   */
   updateReadyState(readyState) {
     this._serverInfos.state =
       readyState === true
@@ -145,11 +149,11 @@ export class Player {
         : enumPlayerState.WaitingInLobby;
 
     console.log(
-      this._serverInfos.nick +
-        " is " +
-        (this._serverInfos.state == enumPlayerState.Ready
-          ? "ready !"
-          : "not yet ready")
+      `${this._serverInfos.nick} is ${
+        this._serverInfos.state === enumPlayerState.Ready
+          ? "ready!"
+          : "not ready"
+      }`
     );
   }
 }

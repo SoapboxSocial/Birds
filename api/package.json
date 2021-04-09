@@ -4,7 +4,7 @@
   "private": false,
   "scripts": {
     "start": "node build/server.js",
-    "dev": "DEBUG=* nodemon -r dotenv/config server.ts",
+    "dev": "nodemon -r dotenv/config server.ts",
     "build": "tsc --project ./",
     "format": "prettier --write \"**/*.js\" \"**/*.ts\""
   },

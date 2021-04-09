@@ -25,6 +25,7 @@ var _gameState = enumState.Login;
 var _playerManager;
 
 var _pipeList;
+
 var _isCurrentPlayerReady = false;
 
 /**
@@ -145,7 +146,7 @@ async function startClient(nick) {
   });
 
   _socket.on("connect", function () {
-    console.log("Connection established :)");
+    console.log("[connect] connection successful");
 
     // Bind disconnect event
     _socket.on("disconnect", function () {
@@ -201,6 +202,8 @@ function loadGameRoom(nick) {
      * }>} playersList
      */
     function (playersList) {
+      console.log("[player_list] current players", playersList.length);
+
       // Add current players to the PlayerManager
       playersList.forEach((playerObject) => {
         _playerManager.addPlayer(playerObject, _userID);
@@ -218,13 +221,23 @@ function loadGameRoom(nick) {
      * @param {string} id The player's socket ID
      */
     function (id) {
+      console.log("[player_disconnect] removing player with id", id);
       _playerManager.removePlayer(id);
     }
   );
 
-  _socket.on("new_player", function (player) {
-    _playerManager.addPlayer(player);
-  });
+  _socket.on(
+    "new_player",
+    /**
+     *
+     * @param {{ id: string; nick: string; color: number; rotation: number; score: number; best_score: number; state: 1 | 2 | 3 | 4; posX: number; posY: number; floor: number; }} player
+     */
+    function (player) {
+      console.log("[new_player] adding new player with id", player.id);
+
+      _playerManager.addPlayer(player);
+    }
+  );
 
   _socket.on(
     "player_ready_state",
@@ -233,17 +246,26 @@ function loadGameRoom(nick) {
      * @param {{ id: string; nick: string; color: number; rotation: number; score: number; best_score: number; state: 1 | 2 | 3 | 4; posX: number; posY: number; floor: number; }} playerInfos
      */
     function (playerInfos) {
+      console.log("[player_ready_state]", playerInfos);
+
       const player = _playerManager.getPlayer(playerInfos.id);
 
       if (typeof player === "undefined") {
         return;
       }
 
+      console.log(player);
+
       player.updateFromServer(playerInfos);
     }
   );
 
   _socket.on("update_game_state", function (gameState) {
+    console.log(
+      "[update_game_state] updating game state with new state",
+      gameState
+    );
+
     changeGameState(gameState);
   });
 
@@ -265,9 +287,6 @@ function loadGameRoom(nick) {
   _socket.on("ranking", function (score) {
     displayRanking(score);
   });
-
-  // Send nickname to the server
-  console.log("Send nickname " + nick);
 
   _socket.emit(
     "say_hi",
@@ -448,8 +467,12 @@ function changeGameState(gameState) {
 function inputsManager() {
   switch (_gameState) {
     case enumState.WaitingRoom:
+      // Toggle the player's ready state
       _isCurrentPlayerReady = !_isCurrentPlayerReady;
+
+      // Tell the server the current player is ready
       _socket.emit("change_ready_state", _isCurrentPlayerReady);
+
       _playerManager.getCurrentPlayer().updateReadyState(_isCurrentPlayerReady);
       break;
     case enumState.OnGame:

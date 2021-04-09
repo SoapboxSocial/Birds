@@ -69,8 +69,6 @@ export default class PlayersManager extends EventEmitter {
       }
     });
 
-    console.log("should start game?");
-
     // If players are ready, start the game
     this.emit("players-ready");
   }

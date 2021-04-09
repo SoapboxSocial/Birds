@@ -3,7 +3,7 @@ import { constants as Const } from "../../constants";
 import { checkCollision } from "./collisionEngine";
 import { PlayerState, ServerState } from "./enums";
 import PipeManager from "./pipeManager";
-import Player, { PlayerTinyObject } from "./player";
+import { PlayerTinyObject } from "./player";
 import PlayersManager from "./playersManager";
 
 export enum GameStateEnum {
@@ -46,12 +46,16 @@ export default class Game {
 
   start() {
     this.playersManager.on("players-ready", () => {
+      console.log("players ready, start game!");
+
       this.startGameLoop();
     });
 
     this.pipeManager.on("need_new_pipe", () => {
+      console.log("needs new pipe, generate one!");
+
       // Create a pipe and send it to clients
-      var pipe = this.pipeManager.newPipe();
+      this.pipeManager.newPipe();
     });
   }
 
@@ -60,7 +64,7 @@ export default class Game {
     this.sockets.push(socket);
 
     // Create a new player for the current socket
-    let player = this.playersManager.addNewPlayer(socket, socket.id);
+    this.playersManager.addNewPlayer(socket, socket.id);
 
     // Register to socket events
     socket.on("disconnect", () => {
@@ -129,8 +133,15 @@ export default class Game {
     }
 
     socket.on("change_ready_state", (readyState: boolean) => {
+      console.log(
+        "[change_ready_state]",
+        `${socket.id} ${readyState ? "is ready" : "is not ready"}`
+      );
+
       // If the server is currently waiting for players, update ready state
       if (this.state === ServerState.WaitingForPlayers) {
+        console.log("is waiting for players");
+
         this.playersManager.changeLobbyState(socket.id, readyState);
 
         this.broadcast(
