@@ -115,21 +115,13 @@ export default class Player {
 
     this._playerTinyObject.state = enums.PlayerState.Died;
 
-    console.log("OMG ! They kill " + this._playerTinyObject.nick + " :p");
+    console.log(`[player] ${this._playerTinyObject.id} just died`);
   }
 
   setReadyState(readyState: boolean) {
     this._playerTinyObject.state = readyState
       ? enums.PlayerState.Playing
       : enums.PlayerState.WaitingInLobby;
-
-    console.log(
-      this._playerTinyObject.nick +
-        " is " +
-        (this._playerTinyObject.state === enums.PlayerState.Playing
-          ? "ready !"
-          : "not yet ready")
-    );
   }
 
   setBestScore(score: number) {
