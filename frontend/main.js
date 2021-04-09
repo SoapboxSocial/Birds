@@ -277,8 +277,6 @@ function loadGameRoom(nick) {
      * @param {{players: { id: string; nick: string; color: number; rotation: number; score: number; best_score: number; state: 1 | 2 | 3 | 4; posX: number; posY: number; floor: number; }[], pipes: { id: number; posX: number; posY: number; }[]}} data
      */
     function (data) {
-      console.log("[game_loop_update]", data);
-
       _playerManager.updatePlayerListFromServer(data.players);
 
       _pipeList = data.pipes;
