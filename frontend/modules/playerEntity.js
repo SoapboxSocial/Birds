@@ -145,13 +145,5 @@ export class Player {
       readyState === true
         ? enumPlayerState.Ready
         : enumPlayerState.WaitingInLobby;
-
-    console.log(
-      `${this._serverInfos.nick} is ${
-        this._serverInfos.state === enumPlayerState.Ready
-          ? "ready!"
-          : "not ready"
-      }`
-    );
   }
 }

@@ -247,15 +247,15 @@ function loadGameRoom(nick) {
      * @param {{ id: string; nick: string; color: number; rotation: number; score: number; best_score: number; state: 1 | 2 | 3 | 4; posX: number; posY: number; floor: number; }} playerInfos
      */
     function (playerInfos) {
-      console.log("[player_ready_state]", playerInfos);
+      console.log(
+        `[player_ready_state] player with id: ${playerInfos.id} state changed: ${playerInfos.state}`
+      );
 
       const player = _playerManager.getPlayer(playerInfos.id);
 
       if (typeof player === "undefined") {
         return;
       }
-
-      console.log(player);
 
       player.updateFromServer(playerInfos);
     }
