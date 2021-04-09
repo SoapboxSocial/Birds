@@ -133,11 +133,6 @@ export default class Game {
     }
 
     socket.on("change_ready_state", (readyState: boolean) => {
-      console.log(
-        "[change_ready_state]",
-        `${socket.id} ${readyState ? "is ready" : "is not ready"}`
-      );
-
       // If the server is currently waiting for players, update ready state
       if (this.state === ServerState.WaitingForPlayers) {
         console.log("is waiting for players");

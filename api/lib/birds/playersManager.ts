@@ -55,7 +55,7 @@ export default class PlayersManager extends EventEmitter {
     playerToReady.setReadyState(isReady);
 
     // Check if all players are ready
-    this.playersList.forEach((player, id) => {
+    for (const [id, player] of this.playersList.entries()) {
       if (player.getState() === enums.PlayerState.WaitingInLobby) {
         console.info(
           `[PlayersManager] ${id} is not yet ready, don't start game`
@@ -63,7 +63,7 @@ export default class PlayersManager extends EventEmitter {
 
         return;
       }
-    });
+    }
 
     // If players are ready, start the game
     this.emit("players-ready");
