@@ -1,17 +1,18 @@
 import { EventEmitter } from "events";
-import { PlayerStateEnum } from "./shared";
+import { Socket } from "socket.io";
 import * as enums from "./enums";
-import Player from "./player";
+import Player, { PlayerTinyObject } from "./player";
 import Scores from "./scoreSystem";
+import { PlayerStateEnum } from "./shared";
 
 const NB_AVAILABLE_BIRDS_COLOR = 4;
 
 export default class PlayersManager extends EventEmitter {
-  private playersList: Player[] = [];
+  private playersList: Map<string, Player> = new Map();
   private posOnGrid = 0;
   private scores = new Scores();
 
-  addNewPlayer(playerSocket: any, id: string) {
+  addNewPlayer(playerSocket: Socket, id: string) {
     // Set an available color according the number of client's sprites
     const birdColor = Math.floor(
       Math.random() * (NB_AVAILABLE_BIRDS_COLOR - 1 + 1)
@@ -20,100 +21,95 @@ export default class PlayersManager extends EventEmitter {
     // Create new player and add it in the list
     const newPlayer = new Player(playerSocket, id, birdColor);
 
-    this.playersList.push(newPlayer);
+    this.playersList.set(id, newPlayer);
 
     console.info(
-      "New player connected. There is currently " +
-        this.playersList.length +
-        " player(s)"
+      `[PlayersManager] New player connected, there are currently ${this.playersList.size} player(s)`
     );
 
     return newPlayer;
   }
 
-  removePlayer(player: Player) {
-    const pos = this.playersList.indexOf(player);
+  getPlayer(id: string) {
+    return this.playersList.get(id);
+  }
 
-    if (pos < 0) {
-      console.error("[ERROR] Can't find player in playerList");
-    } else {
-      console.info("Removing player " + player.getNick());
+  removePlayer(id: string) {
+    if (this.playersList.has(id)) {
+      console.log(`[PlayersManager] Removing player of id: ${id}`);
 
-      this.playersList.splice(pos, 1);
-
-      console.info("It remains " + this.playersList.length + " player(s)");
+      this.playersList.delete(id);
     }
   }
 
-  changeLobbyState(player: Player, isReady: boolean) {
-    let pos = this.playersList.indexOf(player);
+  changeLobbyState(id: string, isReady: boolean) {
+    const playerToReady = this.playersList.get(id);
 
-    if (pos < 0) {
-      console.error("[ERROR] Can't find player in playerList");
-    } else {
-      // Change ready state
-      this.playersList[pos].setReadyState(isReady);
+    if (typeof playerToReady === "undefined") {
+      console.error(`[PlayersManager] Player with id: ${id} not found!`);
+
+      return;
     }
 
-    // PlayersManager check if players are ready
-    for (let i = 0; i < this.playersList.length; i++) {
-      // if at least one player doesn't ready, return
-      if (this.playersList[i].getState() === enums.PlayerState.WaitingInLobby) {
-        const nick = this.playersList[i].getNick();
+    // Set current player to ready
+    playerToReady.setReadyState(isReady);
 
-        console.info(nick + " is not yet ready, don't start game");
+    // Check if all players are ready
+    for (const [id, player] of this.playersList.entries()) {
+      if (player.getState() === enums.PlayerState.WaitingInLobby) {
+        console.info(
+          `[PlayersManager] ${id} is not yet ready, don't start game`
+        );
 
         return;
       }
     }
 
-    // else raise the start game event !
+    // If players are ready, start the game
     this.emit("players-ready");
   }
 
-  getPlayerList(specificState?: PlayerStateEnum) {
-    let players = [];
+  getPlayersListByState(playerState: PlayerStateEnum) {
+    return Array.from(this.playersList)
+      .map(([, player]) => player)
+      .filter((player) => player.getState() === playerState);
+  }
 
-    for (let i = 0; i < this.playersList.length; i++) {
-      if (specificState) {
-        if (this.playersList[i].getState() === specificState) {
-          players.push(this.playersList[i]);
-        }
-      } else {
-        players.push(this.playersList[i].getPlayerObject());
-      }
-    }
-
-    return players;
+  getPlayerList() {
+    return Array.from(this.playersList).map(([, player]) =>
+      player.getPlayerObject()
+    );
   }
 
   getOnGamePlayerList() {
-    let players = [];
+    return Array.from(this.playersList)
+      .map(([, player]) => player)
+      .filter((player) => {
+        const playerState = player.getState();
 
-    for (let i = 0; i < this.playersList.length; i++) {
-      if (
-        this.playersList[i].getState() === enums.PlayerState.Playing ||
-        this.playersList[i].getState() === enums.PlayerState.Died
-      )
-        players.push(this.playersList[i].getPlayerObject());
-    }
-
-    return players;
+        return (
+          playerState === enums.PlayerState.Playing ||
+          playerState === enums.PlayerState.Died
+        );
+      })
+      .map((player) => player.getPlayerObject());
   }
 
   getNumberOfPlayers() {
-    return this.playersList.length;
+    return this.playersList.size;
   }
 
   updatePlayers(time: number) {
-    for (let i = 0; i < this.playersList.length; i++) {
-      this.playersList[i].update(time);
-    }
+    this.playersList.forEach((player) => {
+      player.update(time);
+    });
   }
 
   arePlayersStillAlive() {
-    for (let i = 0; i < this.playersList.length; i++) {
-      if (this.playersList[i].getState() === enums.PlayerState.Playing) {
+    for (const [, player] of this.playersList.entries()) {
+      const playerState = player.getState();
+
+      if (playerState === enums.PlayerState.Playing) {
         return true;
       }
     }
@@ -122,35 +118,28 @@ export default class PlayersManager extends EventEmitter {
   }
 
   resetPlayersForNewGame() {
-    let updatedList = [];
-
-    // reset position counter
+    // Reset player position counter
     this.posOnGrid = 0;
 
-    for (let i = 0; i < this.playersList.length; i++) {
-      this.playersList[i].preparePlayer(this.posOnGrid++);
+    return Array.from(this.playersList).map(([, player]) => {
+      player.preparePlayer(this.posOnGrid++);
 
-      updatedList.push(this.playersList[i].getPlayerObject());
-    }
-
-    return updatedList;
+      return player.getPlayerObject();
+    });
   }
 
   sendPlayerScore() {
     // Save player score
-    for (let i = 0; i < this.playersList.length; i++) {
-      this.scores.savePlayerScore(
-        this.playersList[i],
-        this.playersList[i].getScore()
-      );
-    }
+    this.playersList.forEach((player) => {
+      this.scores.savePlayerScore(player, player.getScore());
+    });
 
     // Retrieve highscores and then send scores to players
     this.scores.getHighScores((highScores) => {
-      // Send score to the players
-      for (let i = 0; i < this.playersList.length; i++) {
-        this.playersList[i].sendScore(this.playersList.length, highScores);
-      }
+      this.playersList.forEach((player) => {
+        // Send score to the players
+        player.sendScore(this.playersList.keys.length, highScores);
+      });
     });
   }
 

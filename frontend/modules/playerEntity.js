@@ -13,14 +13,17 @@ var COMPLETE_ANNIMATION_DURATION = 150;
 var ANIMATION_FRAME_NUMBER = 3;
 
 export class Player {
-  constructor(infos, uuid) {
+  /**
+   *
+   * @param {{ id: string; nick: string; color: number; rotation: number; score: number; best_score: number; state: 1 | 2 | 3 | 4; posX: number; posY: number; floor: number; }} infos
+   * @param {boolean=} isSelf
+   */
+  constructor(infos, isSelf) {
     this._serverInfos = infos;
     this._isMe = false;
 
-    if (uuid && uuid == infos.id) {
+    if (isSelf) {
       this._isMe = true;
-
-      console.log("Adding player " + infos.nick);
     }
   }
 
@@ -45,7 +48,7 @@ export class Player {
 
       // If it's an opponent, draw him with his name and an opacity
       if (this._isMe === false) {
-        ctx.globalAlpha = 0.6;
+        ctx.globalAlpha = 0.5;
         // Draw player name
         ctx.font = "25px mini_pixel";
         ctx.fillStyle = "#FFA24A";
@@ -110,12 +113,11 @@ export class Player {
     ctx.restore();
   }
 
-  updateFromServer(infos) {
-    this._serverInfos = infos;
-  }
-
-  isCurrentPlayer() {
-    return this._isMe;
+  /**
+   * @param {{ id: string; nick: string; color: number; rotation: number; score: number; best_score: number; state: 1 | 2 | 3 | 4; posX: number; posY: number; floor: number; }} updatedPlayerObject
+   */
+  updateFromServer(updatedPlayerObject) {
+    this._serverInfos = updatedPlayerObject;
   }
 
   getId() {
@@ -130,18 +132,14 @@ export class Player {
     return this._serverInfos.score;
   }
 
+  /**
+   *
+   * @param {boolean} readyState
+   */
   updateReadyState(readyState) {
     this._serverInfos.state =
       readyState === true
         ? enumPlayerState.Ready
         : enumPlayerState.WaitingInLobby;
-
-    console.log(
-      this._serverInfos.nick +
-        " is " +
-        (this._serverInfos.state == enumPlayerState.Ready
-          ? "ready !"
-          : "not yet ready")
-    );
   }
 }

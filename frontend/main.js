@@ -18,10 +18,22 @@ const enumPanels = {
 };
 
 var _gameState = enumState.Login;
+
+/**
+ * @type {import("./modules/playersManager").PlayerManager}
+ */
 var _playerManager;
+
 var _pipeList;
+
 var _isCurrentPlayerReady = false;
+
+/**
+ * The socket ID of the current session
+ * @type {string}
+ */
 var _userID = null;
+
 var _lastTime = null;
 var _rankingTimer;
 var _ranking_time;
@@ -128,13 +140,13 @@ async function startClient(nick) {
   document.getElementById("gs-loader-text").innerHTML =
     "Connecting to the server...";
 
-  _socket = io.connect(Const.SOCKET_ADDR, {
-    query: `roomID=${roomID}`,
-    reconnect: false,
+  _socket = io(Const.SOCKET_ADDR, {
+    query: { roomID: roomID },
+    reconnection: false,
   });
 
   _socket.on("connect", function () {
-    console.log("Connection established :)");
+    console.log("[connect] connection successful");
 
     // Bind disconnect event
     _socket.on("disconnect", function () {
@@ -155,12 +167,12 @@ async function startClient(nick) {
   });
 
   _socket.on("error", function () {
+    console.log("Cannot connect the websocket");
+
     document.getElementById("gs-error-message").innerHTML =
-      "Fail to connect the WebSocket to the server.<br/><br/>Please check the WS address.";
+      "Failed to connect to the server.";
 
     showHideMenu(enumPanels.Error, true);
-
-    console.log("Cannot connect the web_socket ");
   });
 }
 
@@ -173,55 +185,117 @@ async function startClient(nick) {
  */
 function loadGameRoom(nick) {
   // Bind new socket events
-  _socket.on("player_list", function (playersList) {
-    // Add this player in the list
-    for (let i = 0; i < playersList.length; i++) {
-      _playerManager.addPlayer(playersList[i], _userID);
+  _socket.on(
+    "player_list",
+    /**
+     * @param {Array<{
+     * id: string;
+     * nick: string;
+     * color: number;
+     * rotation: number;
+     * score: number;
+     * best_score: number;
+     * state: 1 | 2 | 3 | 4;
+     * posX: number;
+     * posY: number;
+     * floor: number;
+     * }>} playersList
+     */
+    function (playersList) {
+      console.log("[player_list] current players", playersList.length);
+
+      // Add current players to the PlayerManager
+      playersList.forEach((playerObject) => {
+        _playerManager.addPlayer(playerObject, _userID);
+      });
+
+      // Redraw
+      draw(0, 0);
     }
+  );
 
-    // Redraw
-    draw(0, 0);
-  });
+  _socket.on(
+    "player_disconnect",
+    /**
+     *
+     * @param {string} id The player's socket ID
+     */
+    function (id) {
+      console.log("[player_disconnect] removing player with id", id);
 
-  _socket.on("player_disconnect", function (player) {
-    _playerManager.removePlayer(player);
-  });
+      _playerManager.removePlayer(id);
+    }
+  );
 
-  _socket.on("new_player", function (player) {
-    _playerManager.addPlayer(player);
-  });
+  _socket.on(
+    "new_player",
+    /**
+     *
+     * @param {{ id: string; nick: string; color: number; rotation: number; score: number; best_score: number; state: 1 | 2 | 3 | 4; posX: number; posY: number; floor: number; }} player
+     */
+    function (player) {
+      console.log("[new_player] adding new player with id", player.id);
 
-  _socket.on("player_ready_state", function (playerInfos) {
-    _playerManager
-      .getPlayerFromId(playerInfos.id)
-      .updateFromServer(playerInfos);
-  });
+      _playerManager.addPlayer(player);
+    }
+  );
+
+  _socket.on(
+    "player_ready_state",
+    /**
+     *
+     * @param {{ id: string; nick: string; color: number; rotation: number; score: number; best_score: number; state: 1 | 2 | 3 | 4; posX: number; posY: number; floor: number; }} playerInfos
+     */
+    function (playerInfos) {
+      console.log(
+        `[player_ready_state] player with id: ${playerInfos.id} state changed: ${playerInfos.state}`
+      );
+
+      const player = _playerManager.getPlayer(playerInfos.id);
+
+      if (typeof player === "undefined") {
+        return;
+      }
+
+      player.updateFromServer(playerInfos);
+    }
+  );
 
   _socket.on("update_game_state", function (gameState) {
+    console.log(
+      "[update_game_state] updating game state with new state",
+      gameState
+    );
+
     changeGameState(gameState);
   });
 
-  _socket.on("game_loop_update", function (serverDatasUpdated) {
-    console.log(serverDatasUpdated);
+  _socket.on(
+    "game_loop_update",
+    /**
+     *
+     * @param {{players: { id: string; nick: string; color: number; rotation: number; score: number; best_score: number; state: 1 | 2 | 3 | 4; posX: number; posY: number; floor: number; }[], pipes: { id: number; posX: number; posY: number; }[]}} data
+     */
+    function (data) {
+      _playerManager.updatePlayerListFromServer(data.players);
 
-    _playerManager.updatePlayerListFromServer(serverDatasUpdated.players);
-
-    _pipeList = serverDatasUpdated.pipes;
-  });
+      _pipeList = data.pipes;
+    }
+  );
 
   _socket.on("ranking", function (score) {
     displayRanking(score);
   });
 
-  // Send nickname to the server
-  console.log("Send nickname " + nick);
-
   _socket.emit(
     "say_hi",
     nick,
     window.innerHeight - 96,
-    function (serverState, uuid) {
-      _userID = uuid;
+    function (serverState, playerId) {
+      console.log("[say_hi]", playerId);
+
+      _userID = playerId;
+
       changeGameState(serverState);
 
       // Display a message according to the game state
@@ -232,9 +306,11 @@ function loadGameRoom(nick) {
         );
       } else {
         // Display a little help text
-        if (_isTouchDevice == false)
+        if (_isTouchDevice == false) {
           infoPanel(true, "Press <strong>space</strong> to fly !", 5000);
-        else infoPanel(true, "<strong>Tap</strong> to fly !", 5000);
+        } else {
+          infoPanel(true, "<strong>Tap</strong> to fly !", 5000);
+        }
       }
     }
   );
@@ -276,8 +352,6 @@ function displayRanking(score) {
   var nodeMedal = document.querySelector(".gs-ranking-medal");
 
   var nodeHS = document.getElementById("gs-highscores-scores");
-
-  console.log(score);
 
   // Remove previous medals just in case
   nodeMedal.classList.remove("third");
@@ -334,7 +408,7 @@ function displayRanking(score) {
  * @param {number} gameState
  */
 function changeGameState(gameState) {
-  var strLog = "Server just change state to ";
+  var strLog = "[changeGameState] Server just changed state to ";
 
   _gameState = gameState;
 
@@ -381,7 +455,7 @@ function changeGameState(gameState) {
       break;
 
     default:
-      console.log("Unknew game state [" + _gameState + "]");
+      console.log("[changeGameState] Unknown game state [" + _gameState + "]");
       strLog += "undefined state";
       break;
   }
@@ -392,8 +466,12 @@ function changeGameState(gameState) {
 function inputsManager() {
   switch (_gameState) {
     case enumState.WaitingRoom:
+      // Toggle the player's ready state
       _isCurrentPlayerReady = !_isCurrentPlayerReady;
+
+      // Tell the server the current player is ready
       _socket.emit("change_ready_state", _isCurrentPlayerReady);
+
       _playerManager.getCurrentPlayer().updateReadyState(_isCurrentPlayerReady);
       break;
     case enumState.OnGame:
@@ -449,34 +527,34 @@ else _isTouchDevice = false;
 
 const sequence = Date.now();
 
-console.log("Creating sequence", sequence);
+console.log("[setup] creating sequence", sequence);
 
-// window.webkit = {
-//   messageHandlers: {
-//     user: {
-//       postMessage: (payload) => {
-//         console.log(
-//           "Handling message handler 'user' with sequence",
-//           payload.sequence
-//         );
+window.webkit = {
+  messageHandlers: {
+    user: {
+      postMessage: (payload) => {
+        console.log(
+          "[WebKit] Handling messageHandler 'user' with sequence",
+          payload.sequence
+        );
 
-//         emitter.emit("user", {
-//           sequence: payload.sequence,
-//           data: {
-//             display_name: "Bitch",
-//             id: 10,
-//             image: "fuck",
-//             username: "jeff",
-//           },
-//         });
-//       },
-//     },
-//   },
-// };
+        emitter.emit("user", {
+          sequence: payload.sequence,
+          data: {
+            display_name: "Jeff",
+            id: 71,
+            image: "jeff.png",
+            username: "jeff",
+          },
+        });
+      },
+    },
+  },
+};
 
 emitter.on("user", (event) => {
   if (event.sequence === sequence) {
-    console.log("Sequence correct, start client");
+    console.log("[setup] Sequence correct, start client");
 
     if ("username" in event.data) {
       startClient(event.data.username);
@@ -484,21 +562,21 @@ emitter.on("user", (event) => {
       startClient(event.data.display_name);
     }
   } else {
-    console.log("Sequence incorrect, start client");
+    console.log("[setup] Sequence incorrect, start client");
   }
 });
 
 emitter.on("closed", () => {
-  console.log("Handling closing the game");
+  console.log("[cleanup] Handling closing the game");
 
   _socket.emit("close_game");
 });
 
 // Load resources and Start the client !
-console.log("Client started, load resources...");
+console.log("[setup] Client started, load resources...");
 
 canvasPainter.loadResources(function () {
-  console.log("Resources loaded, connect to server...");
+  console.log("[CanvasPainter] Resources loaded, connect to server...");
 
   postMessage("user", { sequence });
 });

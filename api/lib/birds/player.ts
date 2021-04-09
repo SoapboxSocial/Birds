@@ -88,8 +88,6 @@ export default class Player {
 
   setNick(nick: string) {
     this._playerTinyObject.nick = nick;
-
-    console.info("Please call me [" + nick + "] !");
   }
 
   setFloor(floor: number) {
@@ -117,29 +115,17 @@ export default class Player {
 
     this._playerTinyObject.state = enums.PlayerState.Died;
 
-    console.info("OMG ! They kill " + this._playerTinyObject.nick + " :p");
+    console.log(`[player] ${this._playerTinyObject.id} just died`);
   }
 
   setReadyState(readyState: boolean) {
     this._playerTinyObject.state = readyState
       ? enums.PlayerState.Playing
       : enums.PlayerState.WaitingInLobby;
-
-    console.info(
-      this._playerTinyObject.nick +
-        " is " +
-        (this._playerTinyObject.state === enums.PlayerState.Playing
-          ? "ready !"
-          : "not yet ready")
-    );
   }
 
   setBestScore(score: number) {
     this._playerTinyObject.best_score = score;
-
-    console.info(
-      this._playerTinyObject.nick + " just beat his highscore to " + score
-    );
   }
 
   isReadyToPlay() {

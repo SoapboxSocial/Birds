@@ -33,3 +33,16 @@ export const BgResources = [
     speed: Const.LEVEL_SPEED,
   },
 ];
+
+// Birds sprites
+export const BIRDS_SPRITES = [
+  "birds/images/clumsy.png",
+  "birds/images/clumsy-blue.png",
+  "birds/images/clumsy-red.png",
+  "birds/images/clumsy-multi.png",
+];
+
+export const FgResources = {
+  GROUND: "birds/images/ground.png",
+  PIPE: "birds/images/pipe.png",
+};
