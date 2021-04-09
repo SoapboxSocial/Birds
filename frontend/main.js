@@ -222,6 +222,7 @@ function loadGameRoom(nick) {
      */
     function (id) {
       console.log("[player_disconnect] removing player with id", id);
+
       _playerManager.removePlayer(id);
     }
   );
@@ -276,7 +277,7 @@ function loadGameRoom(nick) {
      * @param {{players: { id: string; nick: string; color: number; rotation: number; score: number; best_score: number; state: 1 | 2 | 3 | 4; posX: number; posY: number; floor: number; }[], pipes: { id: number; posX: number; posY: number; }[]}} data
      */
     function (data) {
-      console.log(data);
+      console.log("[game_loop_update]", data);
 
       _playerManager.updatePlayerListFromServer(data.players);
 
@@ -293,6 +294,8 @@ function loadGameRoom(nick) {
     nick,
     window.innerHeight - 96,
     function (serverState, playerId) {
+      console.log("[say_hi]", playerId);
+
       _userID = playerId;
 
       changeGameState(serverState);
@@ -351,8 +354,6 @@ function displayRanking(score) {
   var nodeMedal = document.querySelector(".gs-ranking-medal");
 
   var nodeHS = document.getElementById("gs-highscores-scores");
-
-  console.log(score);
 
   // Remove previous medals just in case
   nodeMedal.classList.remove("third");
