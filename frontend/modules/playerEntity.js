@@ -24,8 +24,6 @@ export class Player {
 
     if (uuid && uuid == infos.id) {
       this._isMe = true;
-
-      console.log("Adding player " + infos.nick);
     }
   }
 

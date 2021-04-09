@@ -80,7 +80,9 @@ export class ParallaxBg {
       this.changeOpacityTime = 0;
 
       console.log(
-        "Switching background to " + (this.nightCycle == true ? "night" : "day")
+        `[parallax] switching mode to ${
+          this.nightCycle == true ? "night" : "day"
+        }`
       );
     }
 
