@@ -39,16 +39,20 @@ export class PlayerManager {
       return;
     }
 
-    const player = new Player(playerObject, playerId);
-
-    this.playersList.set(playerObject.id, player);
-
-    console.log(`[PlayerManager] ${playerObject.id} just joined the game!`);
-
-    if (player.isCurrentPlayer() === true) {
-      console.log("[PlayerManager]", "is current user");
+    if (playerObject.id === playerId) {
+      console.log("[PlayerManager]", "you just joined the game!");
 
       this.currentPlayerId = playerId;
+
+      const player = new Player(playerObject, true);
+
+      this.playersList.set(playerId, player);
+    } else {
+      console.log(`[PlayerManager] ${playerObject.id} just joined the game!`);
+
+      const player = new Player(playerObject);
+
+      this.playersList.set(playerObject.id, player);
     }
   }
 

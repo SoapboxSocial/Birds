@@ -16,13 +16,13 @@ export class Player {
   /**
    *
    * @param {{ id: string; nick: string; color: number; rotation: number; score: number; best_score: number; state: 1 | 2 | 3 | 4; posX: number; posY: number; floor: number; }} infos
-   * @param {string=} uuid
+   * @param {boolean=} isSelf
    */
-  constructor(infos, uuid) {
+  constructor(infos, isSelf) {
     this._serverInfos = infos;
     this._isMe = false;
 
-    if (uuid && uuid == infos.id) {
+    if (isSelf) {
       this._isMe = true;
     }
   }
@@ -118,10 +118,6 @@ export class Player {
    */
   updateFromServer(updatedPlayerObject) {
     this._serverInfos = updatedPlayerObject;
-  }
-
-  isCurrentPlayer() {
-    return this._isMe;
   }
 
   getId() {
