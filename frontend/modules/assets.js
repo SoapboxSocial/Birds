@@ -40,6 +40,10 @@ export const BIRDS_SPRITES = [
   "birds/images/clumsy-blue.png",
   "birds/images/clumsy-red.png",
   "birds/images/clumsy-multi.png",
+  "birds/images/clumsy-navy.png",
+  "birds/images/clumsy-green.png",
+  "birds/images/clumsy-pink.png",
+  "birds/images/clumsy-purple.png",
 ];
 
 export const FgResources = {

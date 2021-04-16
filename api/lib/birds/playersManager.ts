@@ -5,7 +5,7 @@ import Player, { PlayerTinyObject } from "./player";
 import Scores from "./scoreSystem";
 import { PlayerStateEnum } from "./shared";
 
-const NB_AVAILABLE_BIRDS_COLOR = 4;
+const NB_AVAILABLE_BIRDS_COLOR = 8;
 
 export default class PlayersManager extends EventEmitter {
   private playersList: Map<string, Player> = new Map();
