@@ -1,0 +1,30 @@
+name: birds
+
+region: fra
+
+services:
+  - build_command: yarn build
+    environment_slug: node-js
+    github:
+      branch: main
+      deploy_on_push: true
+      repo: SoapboxSocial/Birds
+    http_port: 1337
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    source_dir: api
+    name: api
+    routes:
+      - path: /
+    run_command: yarn start
+
+static_sites:
+  - environment_slug: html
+    github:
+      branch: main
+      deploy_on_push: true
+      repo: SoapboxSocial/Birds
+    name: frontend
+    source_dir: frontend
+    routes:
+      - path: /birds
