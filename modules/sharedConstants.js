@@ -1,7 +1,7 @@
 export const Const = {
   ASSET_PREFIX: "birds/",
 
-  SOCKET_ADDR: "/",
+  SOCKET_ADDR: "https://soapbox-apps-server-p39m3.ondigitalocean.app/birds",
 
   SCREEN_WIDTH: 900,
   SCREEN_HEIGHT: 768,
