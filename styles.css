@@ -1,11 +1,11 @@
 @font-face {
   font-family: "mini_pixel";
-  src: url("/birds/fonts/MiniPixel/mini_pixel-7-webfont.eot");
-  src: url("/birds/fonts/MiniPixel/mini_pixel-7-webfont.eot?#iefix")
+  src: url("/fonts/MiniPixel/mini_pixel-7-webfont.eot");
+  src: url("/fonts/MiniPixel/mini_pixel-7-webfont.eot?#iefix")
       format("embedded-opentype"),
-    url("/birds/fonts/MiniPixel/mini_pixel-7-webfont.woff") format("woff"),
-    url("/birds/fonts/MiniPixel/mini_pixel-7-webfont.ttf") format("truetype"),
-    url("/birds/fonts/MiniPixel/mini_pixel-7-webfont.svg#mini_pixel-7regular")
+    url("/fonts/MiniPixel/mini_pixel-7-webfont.woff") format("woff"),
+    url("/fonts/MiniPixel/mini_pixel-7-webfont.ttf") format("truetype"),
+    url("/fonts/MiniPixel/mini_pixel-7-webfont.svg#mini_pixel-7regular")
       format("svg");
   font-weight: normal;
   font-style: normal;
@@ -118,7 +118,7 @@ canvas {
   display: inline-block;
   width: 85px;
   height: 60px;
-  background: url("/birds/images/clumsy.png");
+  background: url("/images/clumsy.png");
   background-position: 0 0;
   animation: birdFly 300ms steps(3, end) infinite;
   -webkit-animation: birdFly 300ms steps(2, end) infinite;
@@ -157,7 +157,7 @@ canvas {
 .gs-ranking-medal {
   height: 80px;
   width: 80px;
-  background: url("/birds/images/medals.png");
+  background: url("/images/medals.png");
   background-position: 0px;
 }
 .third {

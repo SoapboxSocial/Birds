@@ -2,31 +2,31 @@ import { Const } from "./sharedConstants.js";
 
 export const BgResources = [
   {
-    nightSrc: "birds/images/night.png",
+    nightSrc: "images/night.png",
     width: 500,
     height: 768,
     posY: 0,
     speed: Const.LEVEL_SPEED / 4,
   },
   {
-    daySrc: "birds/images/clouds.png",
-    nightSrc: "birds/images/night-clouds.png",
+    daySrc: "images/clouds.png",
+    nightSrc: "images/night-clouds.png",
     width: 300,
     height: 256,
     posY: window.innerHeight - 352,
     speed: Const.LEVEL_SPEED / 3,
   },
   {
-    daySrc: "birds/images/city.png",
-    nightSrc: "birds/images/night-city.png",
+    daySrc: "images/city.png",
+    nightSrc: "images/night-city.png",
     width: 300,
     height: 256,
     posY: window.innerHeight - 352,
     speed: Const.LEVEL_SPEED / 2,
   },
   {
-    daySrc: "birds/images/trees.png",
-    nightSrc: "birds/images/night-trees.png",
+    daySrc: "images/trees.png",
+    nightSrc: "images/night-trees.png",
     width: 300,
     height: 216,
     posY: window.innerHeight - 312,
@@ -36,17 +36,17 @@ export const BgResources = [
 
 // Birds sprites
 export const BIRDS_SPRITES = [
-  "birds/images/clumsy.png",
-  "birds/images/clumsy-blue.png",
-  "birds/images/clumsy-red.png",
-  "birds/images/clumsy-multi.png",
-  "birds/images/clumsy-navy.png",
-  "birds/images/clumsy-green.png",
-  "birds/images/clumsy-pink.png",
-  "birds/images/clumsy-purple.png",
+  "images/clumsy.png",
+  "images/clumsy-blue.png",
+  "images/clumsy-red.png",
+  "images/clumsy-multi.png",
+  "images/clumsy-navy.png",
+  "images/clumsy-green.png",
+  "images/clumsy-pink.png",
+  "images/clumsy-purple.png",
 ];
 
 export const FgResources = {
-  GROUND: "birds/images/ground.png",
-  PIPE: "birds/images/pipe.png",
+  GROUND: "images/ground.png",
+  PIPE: "images/pipe.png",
 };
