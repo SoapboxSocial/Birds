@@ -121,9 +121,9 @@ const roomID = urlParams.get("roomID");
  * @name startClient
  * Starts up the game and connects to Socket.io
  *
- * @param {string} nick
+ * @param {{ username: string, id: number, image: string, display_name?: string }} user
  */
-async function startClient(nick) {
+async function startClient(user) {
   if (typeof io === "undefined") {
     document.getElementById("gs-error-message").innerHTML =
       "Cannot retrieve socket.io file";
@@ -163,7 +163,7 @@ async function startClient(nick) {
 
     showHideMenu(enumPanels.Login, true);
 
-    loadGameRoom(nick);
+    loadGameRoom(user);
   });
 
   _socket.on("error", function () {
@@ -180,10 +180,10 @@ async function startClient(nick) {
  * @name loadGameRoom
  * Handles loading the current game for the user
  *
- * @param {string} nick
+ * @param {{ username: string, id: number, image: string, display_name?: string }} user
  * @returns boolean
  */
-function loadGameRoom(nick) {
+function loadGameRoom(user) {
   // Bind new socket events
   _socket.on(
     "player_list",
@@ -289,7 +289,7 @@ function loadGameRoom(nick) {
 
   _socket.emit(
     "say_hi",
-    nick,
+    user,
     window.innerHeight - 96,
     function (serverState, playerId) {
       console.log("[say_hi]", playerId);
@@ -345,7 +345,7 @@ function loadGameRoom(nick) {
  *  score: number;
  *  bestScore: number;
  *  nbPlayers: number;
- *  highscores: {player: string; score: number;}[]
+ *  highscores: { id: number; player: string; score: number; }[]
  * }} score
  */
 function displayRanking(score) {
@@ -552,19 +552,22 @@ console.log("[setup] creating sequence", sequence);
 //   },
 // };
 
-emitter.on("user", (event) => {
-  if (event.sequence === sequence) {
-    console.log("[setup] Sequence correct, start client");
+emitter.on(
+  "user",
+  /**
+   *
+   * @param {{ data: { username: string, id: number, image: string, display_name?: string }, sequence: number }} event
+   */
+  (event) => {
+    if (event.sequence === sequence) {
+      console.log("[setup] Sequence correct, start client");
 
-    if ("username" in event.data) {
-      startClient(event.data.username);
+      startClient(event.data);
     } else {
-      startClient(event.data.display_name);
+      console.log("[setup] Sequence incorrect, start client");
     }
-  } else {
-    console.log("[setup] Sequence incorrect, start client");
   }
-});
+);
 
 emitter.on("closed", () => {
   console.log("[cleanup] Handling closing the game");
