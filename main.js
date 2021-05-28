@@ -204,15 +204,6 @@ function loadGameRoom(user) {
     function (playersList) {
       console.log("[player_list] current players", playersList.length);
 
-      if (playersList.length < 2) {
-        infoPanel(
-          true,
-          "You need at least <strong>Two birds</strong> to play!"
-        );
-      } else {
-        infoPanel(false);
-      }
-
       // Add current players to the PlayerManager
       playersList.forEach((playerObject) => {
         _playerManager.addPlayer(playerObject, _userID);
@@ -233,6 +224,15 @@ function loadGameRoom(user) {
       console.log("[player_disconnect] removing player with id", id);
 
       _playerManager.removePlayer(id);
+
+      if (_playerManager.playersList.size < 2) {
+        infoPanel(
+          true,
+          "You need at least <strong>Two birds</strong> to play!"
+        );
+      } else {
+        infoPanel(false);
+      }
     }
   );
 
@@ -246,6 +246,15 @@ function loadGameRoom(user) {
       console.log("[new_player] adding new player with id", player.id);
 
       _playerManager.addPlayer(player);
+
+      if (_playerManager.playersList.size < 2) {
+        infoPanel(
+          true,
+          "You need at least <strong>Two birds</strong> to play!"
+        );
+      } else {
+        infoPanel(false);
+      }
     }
   );
 
@@ -544,28 +553,28 @@ const sequence = Date.now();
 
 console.log("[setup] creating sequence", sequence);
 
-// window.webkit = {
-//   messageHandlers: {
-//     user: {
-//       postMessage: (payload) => {
-//         console.log(
-//           "[WebKit] Handling messageHandler 'user' with sequence",
-//           payload.sequence
-//         );
+window.webkit = {
+  messageHandlers: {
+    user: {
+      postMessage: (payload) => {
+        console.log(
+          "[WebKit] Handling messageHandler 'user' with sequence",
+          payload.sequence
+        );
 
-//         emitter.emit("user", {
-//           sequence: payload.sequence,
-//           data: {
-//             display_name: "Jeff",
-//             id: 71,
-//             image: "jeff.png",
-//             username: "jeff",
-//           },
-//         });
-//       },
-//     },
-//   },
-// };
+        emitter.emit("user", {
+          sequence: payload.sequence,
+          data: {
+            display_name: "Jeff",
+            id: 71,
+            image: "jeff.png",
+            username: "jeff",
+          },
+        });
+      },
+    },
+  },
+};
 
 emitter.on(
   "user",
