@@ -204,6 +204,15 @@ function loadGameRoom(user) {
     function (playersList) {
       console.log("[player_list] current players", playersList.length);
 
+      if (playersList.length < 2) {
+        infoPanel(
+          true,
+          "You need at least <strong>Two birds</strong> to play!"
+        );
+      } else {
+        infoPanel(false);
+      }
+
       // Add current players to the PlayerManager
       playersList.forEach((playerObject) => {
         _playerManager.addPlayer(playerObject, _userID);
@@ -494,6 +503,12 @@ function showHideMenu(panelName, isShow) {
   }
 }
 
+/**
+ *
+ * @param {boolean} isShow
+ * @param {string} htmlText
+ * @param {number} timeout
+ */
 function infoPanel(isShow, htmlText, timeout) {
   var topBar = document.getElementById("gs-info-panel");
 
